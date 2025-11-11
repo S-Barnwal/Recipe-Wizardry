@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { ChefHat, Plus, X, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface IngredientInputProps {
   onGenerate: (ingredients: string[]) => void;
@@ -12,11 +14,53 @@ interface IngredientInputProps {
 const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState("");
+  const [availableIngredients, setAvailableIngredients] = useState<string[]>([]);
+  const [filteredIngredients, setFilteredIngredients] = useState<string[]>([]);
+  const { toast } = useToast();
 
-  const addIngredient = () => {
-    if (currentInput.trim() && !ingredients.includes(currentInput.trim())) {
-      setIngredients([...ingredients, currentInput.trim()]);
+  useEffect(() => {
+    // Fetch available ingredients from database
+    const fetchIngredients = async () => {
+      const { data, error } = await supabase
+        .from('ingredients')
+        .select('name')
+        .order('name');
+      
+      if (error) {
+        console.error('Error fetching ingredients:', error);
+        toast({
+          title: "Error loading ingredients",
+          description: "Could not load ingredient list",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (data) {
+        setAvailableIngredients(data.map(i => i.name));
+      }
+    };
+
+    fetchIngredients();
+  }, []);
+
+  useEffect(() => {
+    if (currentInput.trim()) {
+      const filtered = availableIngredients.filter(ing =>
+        ing.toLowerCase().includes(currentInput.toLowerCase())
+      ).slice(0, 5);
+      setFilteredIngredients(filtered);
+    } else {
+      setFilteredIngredients([]);
+    }
+  }, [currentInput, availableIngredients]);
+
+  const addIngredient = (ingredient: string) => {
+    const trimmed = ingredient.trim();
+    if (trimmed && !ingredients.includes(trimmed)) {
+      setIngredients([...ingredients, trimmed]);
       setCurrentInput("");
+      setFilteredIngredients([]);
     }
   };
 
@@ -27,7 +71,11 @@ const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      addIngredient();
+      if (filteredIngredients.length > 0) {
+        addIngredient(filteredIngredients[0]);
+      } else {
+        addIngredient(currentInput);
+      }
     }
   };
 
@@ -50,22 +98,38 @@ const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
       </div>
 
       <div className="space-y-4">
-        <div className="flex gap-2">
-          <Input
-            placeholder="Enter an ingredient (e.g., tomato, chicken, rice)..."
-            value={currentInput}
-            onChange={(e) => setCurrentInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="flex-1"
-          />
-          <Button
-            onClick={addIngredient}
-            size="icon"
-            variant="outline"
-            className="shrink-0"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+        <div className="relative">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter an ingredient (e.g., tomato, chicken, rice)..."
+              value={currentInput}
+              onChange={(e) => setCurrentInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="flex-1"
+            />
+            <Button
+              onClick={() => addIngredient(currentInput)}
+              size="icon"
+              variant="outline"
+              className="shrink-0"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {filteredIngredients.length > 0 && (
+            <div className="absolute z-10 w-full mt-1 bg-card border rounded-lg shadow-lg">
+              {filteredIngredients.map((ing) => (
+                <button
+                  key={ing}
+                  onClick={() => addIngredient(ing)}
+                  className="w-full text-left px-4 py-2 hover:bg-muted transition-smooth"
+                >
+                  {ing}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {ingredients.length > 0 && (

@@ -1,1 +1,10 @@
 project_id = "wauedxzamafkperhmvai"
+
+[functions.generate-recipe-from-ingredients]
+verify_jwt = false
+
+[functions.detect-dish-from-image]
+verify_jwt = false
+
+[functions.get-ingredient-substitutions]
+verify_jwt = false

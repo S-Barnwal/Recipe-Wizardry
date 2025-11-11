@@ -14,7 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dish_ingredients: {
+        Row: {
+          dish_id: string | null
+          id: string
+          ingredient_id: string | null
+        }
+        Insert: {
+          dish_id?: string | null
+          id?: string
+          ingredient_id?: string | null
+        }
+        Update: {
+          dish_id?: string | null
+          id?: string
+          ingredient_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dish_ingredients_dish_id_fkey"
+            columns: ["dish_id"]
+            isOneToOne: false
+            referencedRelation: "dishes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dish_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dishes: {
+        Row: {
+          created_at: string | null
+          cuisine_type: string | null
+          description: string | null
+          difficulty: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          cuisine_type?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          cuisine_type?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      ingredient_substitutions: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          original_ingredient: string
+          ratio: string | null
+          substitute_ingredient: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          original_ingredient: string
+          ratio?: string | null
+          substitute_ingredient: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          original_ingredient?: string
+          ratio?: string | null
+          substitute_ingredient?: string
+        }
+        Relationships: []
+      }
+      ingredients: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          calories: number | null
+          cook_time: number | null
+          created_at: string | null
+          dish_id: string | null
+          id: string
+          ingredients: Json
+          instructions: Json
+          prep_time: number | null
+          servings: number | null
+        }
+        Insert: {
+          calories?: number | null
+          cook_time?: number | null
+          created_at?: string | null
+          dish_id?: string | null
+          id?: string
+          ingredients: Json
+          instructions: Json
+          prep_time?: number | null
+          servings?: number | null
+        }
+        Update: {
+          calories?: number | null
+          cook_time?: number | null
+          created_at?: string | null
+          dish_id?: string | null
+          id?: string
+          ingredients?: Json
+          instructions?: Json
+          prep_time?: number | null
+          servings?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_dish_id_fkey"
+            columns: ["dish_id"]
+            isOneToOne: false
+            referencedRelation: "dishes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
