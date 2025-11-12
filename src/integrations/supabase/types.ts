@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_recipes: {
+        Row: {
+          calories: number | null
+          confidence_score: number | null
+          cook_time: number | null
+          created_at: string | null
+          dish_name: string
+          id: string
+          ingredients: Json
+          instructions: Json
+          likes_count: number | null
+          prep_time: number | null
+          servings: number | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          confidence_score?: number | null
+          cook_time?: number | null
+          created_at?: string | null
+          dish_name: string
+          id?: string
+          ingredients: Json
+          instructions: Json
+          likes_count?: number | null
+          prep_time?: number | null
+          servings?: number | null
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          confidence_score?: number | null
+          cook_time?: number | null
+          created_at?: string | null
+          dish_name?: string
+          id?: string
+          ingredients?: Json
+          instructions?: Json
+          likes_count?: number | null
+          prep_time?: number | null
+          servings?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       dish_ingredients: {
         Row: {
           dish_id: string | null
@@ -122,6 +167,56 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      recipe_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          recipe_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          recipe_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          recipe_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_likes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "community_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recipes: {
         Row: {
           calories: number | null
@@ -165,6 +260,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_recipes: {
+        Row: {
+          calories: number | null
+          confidence_score: number | null
+          cook_time: number | null
+          created_at: string | null
+          dish_name: string
+          id: string
+          ingredients: Json
+          instructions: Json
+          prep_time: number | null
+          servings: number | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          confidence_score?: number | null
+          cook_time?: number | null
+          created_at?: string | null
+          dish_name: string
+          id?: string
+          ingredients: Json
+          instructions: Json
+          prep_time?: number | null
+          servings?: number | null
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          confidence_score?: number | null
+          cook_time?: number | null
+          created_at?: string | null
+          dish_name?: string
+          id?: string
+          ingredients?: Json
+          instructions?: Json
+          prep_time?: number | null
+          servings?: number | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

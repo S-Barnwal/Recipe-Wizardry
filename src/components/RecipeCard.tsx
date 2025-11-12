@@ -1,7 +1,7 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Clock, Users, Flame, Share2, Copy, BookmarkPlus } from "lucide-react";
+import { Clock, Users, Flame, Share2, Copy, BookmarkPlus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Recipe {
@@ -17,9 +17,12 @@ interface Recipe {
 
 interface RecipeCardProps {
   recipe: Recipe;
+  onDelete?: () => void;
+  onShare?: () => void;
+  showActions?: boolean;
 }
 
-const RecipeCard = ({ recipe }: RecipeCardProps) => {
+const RecipeCard = ({ recipe, onDelete, onShare, showActions }: RecipeCardProps) => {
   const { toast } = useToast();
 
   const handleCopy = () => {
@@ -38,7 +41,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
     });
   };
 
-  const handleShare = () => {
+  const handleDefaultShare = () => {
     toast({
       title: "Share feature",
       description: "Share functionality coming soon!",
@@ -58,17 +61,38 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
             )}
           </div>
           <div className="flex gap-2">
-            <Button size="icon" variant="outline" onClick={handleSave}>
-              <BookmarkPlus className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="outline" onClick={handleShare}>
-              <Share2 className="h-4 w-4" />
-            </Button>
+            {!showActions && (
+              <>
+                <Button size="icon" variant="outline" onClick={handleSave}>
+                  <BookmarkPlus className="h-4 w-4" />
+                </Button>
+                <Button size="icon" variant="outline" onClick={handleDefaultShare}>
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
             <Button size="icon" variant="outline" onClick={handleCopy}>
               <Copy className="h-4 w-4" />
             </Button>
           </div>
         </div>
+
+        {showActions && (
+          <div className="flex gap-2 mb-4">
+            {onShare && (
+              <Button variant="outline" size="sm" onClick={onShare}>
+                <Share2 className="h-4 w-4 mr-2" />
+                Share to Community
+              </Button>
+            )}
+            {onDelete && (
+              <Button variant="destructive" size="sm" onClick={onDelete}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-4 mb-6">
           {recipe.cookTime && (

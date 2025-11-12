@@ -5,6 +5,7 @@ import { Badge } from "./ui/badge";
 import { ChefHat, Plus, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import VoiceInput from "./VoiceInput";
 
 interface IngredientInputProps {
   onGenerate: (ingredients: string[]) => void;
@@ -19,7 +20,6 @@ const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Fetch available ingredients from database
     const fetchIngredients = async () => {
       const { data, error } = await supabase
         .from('ingredients')
@@ -79,6 +79,12 @@ const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
     }
   };
 
+  const handleVoiceTranscript = (text: string) => {
+    const newIngredients = text.split(",").map(i => i.trim()).filter(i => i);
+    const uniqueIngredients = [...new Set([...ingredients, ...newIngredients])];
+    setIngredients(uniqueIngredients);
+  };
+
   const handleGenerate = () => {
     if (ingredients.length > 0) {
       onGenerate(ingredients);
@@ -99,14 +105,29 @@ const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
 
       <div className="space-y-4">
         <div className="relative">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter an ingredient (e.g., tomato, chicken, rice)..."
-              value={currentInput}
-              onChange={(e) => setCurrentInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1"
-            />
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <Input
+                placeholder="Enter an ingredient (e.g., tomato, chicken, rice)..."
+                value={currentInput}
+                onChange={(e) => setCurrentInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="w-full"
+              />
+              {filteredIngredients.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-card border rounded-lg shadow-lg">
+                  {filteredIngredients.map((ing) => (
+                    <button
+                      key={ing}
+                      onClick={() => addIngredient(ing)}
+                      className="w-full text-left px-4 py-2 hover:bg-muted transition-smooth"
+                    >
+                      {ing}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <Button
               onClick={() => addIngredient(currentInput)}
               size="icon"
@@ -115,21 +136,8 @@ const IngredientInput = ({ onGenerate, isLoading }: IngredientInputProps) => {
             >
               <Plus className="h-4 w-4" />
             </Button>
+            <VoiceInput onTranscript={handleVoiceTranscript} />
           </div>
-
-          {filteredIngredients.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-card border rounded-lg shadow-lg">
-              {filteredIngredients.map((ing) => (
-                <button
-                  key={ing}
-                  onClick={() => addIngredient(ing)}
-                  className="w-full text-left px-4 py-2 hover:bg-muted transition-smooth"
-                >
-                  {ing}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {ingredients.length > 0 && (

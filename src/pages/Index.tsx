@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import IngredientInput from "@/components/IngredientInput";
 import ImageUpload from "@/components/ImageUpload";
 import RecipeCard from "@/components/RecipeCard";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Save } from "lucide-react";
 
 const Index = () => {
   const [recipe, setRecipe] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    checkUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  };
 
   const handleIngredientGenerate = async (ingredients: string[]) => {
     setIsLoading(true);
@@ -39,11 +57,12 @@ const Index = () => {
           description: "Your delicious recipe is ready.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+      const errorMessage = error.response?.data?.error || error.message;
       toast({
         title: "Error",
-        description: "Failed to generate recipe. Please try again.",
+        description: errorMessage || "Failed to generate recipe. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -56,7 +75,6 @@ const Index = () => {
     setRecipe(null);
     
     try {
-      // Convert file to base64
       const reader = new FileReader();
       const base64Promise = new Promise<string>((resolve, reject) => {
         reader.onloadend = () => {
@@ -90,15 +108,59 @@ const Index = () => {
           description: "Recipe generated from your image.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+      const errorMessage = error.response?.data?.error || error.message;
       toast({
         title: "Error",
-        description: "Failed to detect dish. Please try again.",
+        description: errorMessage || "Failed to detect dish. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSaveRecipe = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save recipes",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!recipe) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("user_recipes").insert({
+        user_id: user.id,
+        dish_name: recipe.name,
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+        prep_time: parseInt(recipe.cookTime) || null,
+        cook_time: parseInt(recipe.cookTime) || null,
+        servings: recipe.servings,
+        calories: recipe.calories,
+        confidence_score: recipe.confidence,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Recipe saved!",
+        description: "Check it out in My Recipes",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error saving recipe",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -123,7 +185,26 @@ const Index = () => {
             </div>
 
             {recipe && (
-              <div className="max-w-4xl mx-auto">
+              <div className="max-w-4xl mx-auto space-y-4">
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleSaveRecipe}
+                    disabled={saving || !user}
+                    variant="default"
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        {user ? "Save Recipe" : "Sign in to Save"}
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <RecipeCard recipe={recipe} />
               </div>
             )}
