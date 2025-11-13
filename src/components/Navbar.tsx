@@ -1,12 +1,15 @@
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { NavLink } from "./NavLink";
-import { Button } from "./ui/button";
-import { Menu, X, LogOut, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
+import { ChefHat, Menu, X, User, Calendar, LogOut } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { NavLink } from "./NavLink";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkUser();
@@ -25,18 +28,19 @@ const Navbar = () => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    navigate("/");
   };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b transition-smooth">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <NavLink to="/" className="flex items-center space-x-2">
-            <span className="text-2xl">🍳</span>
+          <Link to="/" className="flex items-center space-x-2">
+            <ChefHat className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Smart Recipe
             </span>
-          </NavLink>
+          </Link>
 
           <div className="hidden md:flex items-center space-x-1">
             <NavLink
@@ -78,20 +82,31 @@ const Navbar = () => {
             </NavLink>
 
             {user ? (
-              <div className="flex items-center gap-2 ml-4">
-                <span className="text-sm text-muted-foreground flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  {user.email}
-                </span>
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="ml-4">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <User className="h-4 w-4 mr-2" />
+                    My Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/meal-planner")}>
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Meal Planner
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <NavLink to="/auth" className="ml-4">
-                <Button variant="default" size="sm">Sign In</Button>
-              </NavLink>
+              <Link to="/auth" className="ml-4">
+                <Button variant="default">Sign In</Button>
+              </Link>
             )}
           </div>
 
@@ -99,38 +114,56 @@ const Navbar = () => {
             variant="ghost"
             size="icon"
             className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
 
-        {isOpen && (
+        {isMobileMenuOpen && (
           <div className="md:hidden py-4 animate-fade-in">
             <div className="flex flex-col space-y-2">
               <NavLink
                 to="/"
                 className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
                 activeClassName="bg-muted text-foreground font-medium"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
               </NavLink>
               {user && (
-                <NavLink
-                  to="/my-recipes"
-                  className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
-                  activeClassName="bg-muted text-foreground font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  My Recipes
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/my-recipes"
+                    className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
+                    activeClassName="bg-muted text-foreground font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    My Recipes
+                  </NavLink>
+                  <NavLink
+                    to="/profile"
+                    className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
+                    activeClassName="bg-muted text-foreground font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    My Profile
+                  </NavLink>
+                  <NavLink
+                    to="/meal-planner"
+                    className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
+                    activeClassName="bg-muted text-foreground font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Meal Planner
+                  </NavLink>
+                </>
               )}
               <NavLink
                 to="/community"
                 className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
                 activeClassName="bg-muted text-foreground font-medium"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Community
               </NavLink>
@@ -138,7 +171,7 @@ const Navbar = () => {
                 to="/about"
                 className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
                 activeClassName="bg-muted text-foreground font-medium"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </NavLink>
@@ -146,7 +179,7 @@ const Navbar = () => {
                 to="/contact"
                 className="px-4 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted transition-smooth"
                 activeClassName="bg-muted text-foreground font-medium"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
               </NavLink>
@@ -159,7 +192,7 @@ const Navbar = () => {
                     size="sm"
                     onClick={() => {
                       handleSignOut();
-                      setIsOpen(false);
+                      setIsMobileMenuOpen(false);
                     }}
                     className="w-full"
                   >
@@ -168,11 +201,11 @@ const Navbar = () => {
                   </Button>
                 </div>
               ) : (
-                <NavLink to="/auth" onClick={() => setIsOpen(false)}>
+                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="default" size="sm" className="w-full">
                     Sign In
                   </Button>
-                </NavLink>
+                </Link>
               )}
             </div>
           </div>

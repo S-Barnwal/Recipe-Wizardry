@@ -16,44 +16,56 @@ export type Database = {
     Tables: {
       community_recipes: {
         Row: {
+          average_rating: number | null
           calories: number | null
           confidence_score: number | null
           cook_time: number | null
           created_at: string | null
+          cuisine_type: string | null
+          dietary_restrictions: string[] | null
           dish_name: string
           id: string
           ingredients: Json
           instructions: Json
           likes_count: number | null
           prep_time: number | null
+          review_count: number | null
           servings: number | null
           user_id: string
         }
         Insert: {
+          average_rating?: number | null
           calories?: number | null
           confidence_score?: number | null
           cook_time?: number | null
           created_at?: string | null
+          cuisine_type?: string | null
+          dietary_restrictions?: string[] | null
           dish_name: string
           id?: string
           ingredients: Json
           instructions: Json
           likes_count?: number | null
           prep_time?: number | null
+          review_count?: number | null
           servings?: number | null
           user_id: string
         }
         Update: {
+          average_rating?: number | null
           calories?: number | null
           confidence_score?: number | null
           cook_time?: number | null
           created_at?: string | null
+          cuisine_type?: string | null
+          dietary_restrictions?: string[] | null
           dish_name?: string
           id?: string
           ingredients?: Json
           instructions?: Json
           likes_count?: number | null
           prep_time?: number | null
+          review_count?: number | null
           servings?: number | null
           user_id?: string
         }
@@ -167,22 +179,72 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_plans: {
+        Row: {
+          created_at: string
+          id: string
+          ingredients: Json
+          meal_type: string
+          planned_date: string
+          recipe_id: string
+          recipe_name: string
+          recipe_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredients: Json
+          meal_type: string
+          planned_date: string
+          recipe_id: string
+          recipe_name: string
+          recipe_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredients?: Json
+          meal_type?: string
+          planned_date?: string
+          recipe_id?: string
+          recipe_name?: string
+          recipe_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string | null
+          dietary_preferences: string[] | null
           id: string
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
+          dietary_preferences?: string[] | null
           id: string
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
+          dietary_preferences?: string[] | null
           id?: string
           username?: string | null
         }
@@ -213,6 +275,51 @@ export type Database = {
             columns: ["recipe_id"]
             isOneToOne: false
             referencedRelation: "community_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recipe_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          recipe_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          recipe_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          recipe_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_reviews_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "community_recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recipe_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -267,6 +374,8 @@ export type Database = {
           confidence_score: number | null
           cook_time: number | null
           created_at: string | null
+          cuisine_type: string | null
+          dietary_restrictions: string[] | null
           dish_name: string
           id: string
           ingredients: Json
@@ -280,6 +389,8 @@ export type Database = {
           confidence_score?: number | null
           cook_time?: number | null
           created_at?: string | null
+          cuisine_type?: string | null
+          dietary_restrictions?: string[] | null
           dish_name: string
           id?: string
           ingredients: Json
@@ -293,6 +404,8 @@ export type Database = {
           confidence_score?: number | null
           cook_time?: number | null
           created_at?: string | null
+          cuisine_type?: string | null
+          dietary_restrictions?: string[] | null
           dish_name?: string
           id?: string
           ingredients?: Json

@@ -4,8 +4,11 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RecipeCard from "@/components/RecipeCard";
-import { Loader2, Heart } from "lucide-react";
+import SearchFilters from "@/components/SearchFilters";
+import RecipeReviews from "@/components/RecipeReviews";
+import { Loader2, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface CommunityRecipe {
   id: string;
@@ -20,14 +23,23 @@ interface CommunityRecipe {
   confidence_score: number;
   likes_count: number;
   created_at: string;
+  cuisine_type?: string;
+  dietary_restrictions?: string[];
+  average_rating?: number;
+  review_count?: number;
 }
 
 const Community = () => {
   const [recipes, setRecipes] = useState<CommunityRecipe[]>([]);
+  const [filteredRecipes, setFilteredRecipes] = useState<CommunityRecipe[]>([]);
   const [usernames, setUsernames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [likedRecipes, setLikedRecipes] = useState<Set<string>>(new Set());
   const [user, setUser] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cuisineType, setCuisineType] = useState("All");
+  const [dietaryFilters, setDietaryFilters] = useState<string[]>([]);
+  const [selectedRecipe, setSelectedRecipe] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -65,6 +77,7 @@ const Community = () => {
       
       if (data) {
         setRecipes(data);
+        setFilteredRecipes(data);
         
         // Fetch usernames for all unique user_ids
         const uniqueUserIds = [...new Set(data.map(r => r.user_id))];
@@ -139,6 +152,43 @@ const Community = () => {
     }
   };
 
+  const handleDietaryFilterToggle = (filter: string) => {
+    setDietaryFilters(prev =>
+      prev.includes(filter)
+        ? prev.filter(f => f !== filter)
+        : [...prev, filter]
+    );
+  };
+
+  useEffect(() => {
+    let filtered = recipes;
+
+    if (searchQuery) {
+      filtered = filtered.filter(recipe =>
+        recipe.dish_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        recipe.ingredients.some((ing: string) =>
+          ing.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+
+    if (cuisineType !== "All") {
+      filtered = filtered.filter(recipe =>
+        recipe.cuisine_type?.toLowerCase() === cuisineType.toLowerCase()
+      );
+    }
+
+    if (dietaryFilters.length > 0) {
+      filtered = filtered.filter(recipe =>
+        dietaryFilters.every(filter =>
+          recipe.dietary_restrictions?.includes(filter)
+        )
+      );
+    }
+
+    setFilteredRecipes(filtered);
+  }, [searchQuery, cuisineType, dietaryFilters, recipes]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -154,13 +204,22 @@ const Community = () => {
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-foreground">Community Recipes</h1>
           
-          {recipes.length === 0 ? (
+          <SearchFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            cuisineType={cuisineType}
+            onCuisineChange={setCuisineType}
+            dietaryFilters={dietaryFilters}
+            onDietaryFilterToggle={handleDietaryFilterToggle}
+          />
+
+          {filteredRecipes.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No community recipes yet. Be the first to share!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recipes.map((recipe) => (
+              {filteredRecipes.map((recipe) => (
                 <div key={recipe.id} className="relative">
                   <RecipeCard
                     recipe={{
@@ -173,26 +232,43 @@ const Community = () => {
                       confidence: recipe.confidence_score,
                     }}
                   />
-                  <div className="absolute top-4 right-4 flex items-center gap-2 bg-background/90 backdrop-blur-sm px-3 py-2 rounded-lg">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleLike(recipe.id)}
-                      className="p-0 h-auto"
-                    >
-                      <Heart
-                        className={`h-5 w-5 ${
-                          likedRecipes.has(recipe.id)
-                            ? "fill-red-500 text-red-500"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </Button>
-                    <span className="text-sm font-medium">{recipe.likes_count}</span>
+                  <div className="absolute top-4 right-4 flex flex-col gap-2">
+                    <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm px-3 py-2 rounded-lg">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleLike(recipe.id)}
+                        className="p-0 h-auto"
+                      >
+                        <Heart
+                          className={`h-5 w-5 ${
+                            likedRecipes.has(recipe.id)
+                              ? "fill-red-500 text-red-500"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </Button>
+                      <span className="text-sm font-medium">{recipe.likes_count}</span>
+                    </div>
+                    {recipe.average_rating > 0 && (
+                      <div className="flex items-center gap-1 bg-background/90 backdrop-blur-sm px-3 py-2 rounded-lg">
+                        <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                        <span className="text-sm font-medium">{recipe.average_rating.toFixed(1)}</span>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    By {usernames[recipe.user_id] || "Anonymous"}
-                  </p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      By {usernames[recipe.user_id] || "Anonymous"}
+                    </p>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => setSelectedRecipe(recipe.id)}
+                    >
+                      View Reviews ({recipe.review_count || 0})
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -200,6 +276,15 @@ const Community = () => {
         </div>
       </main>
       <Footer />
+      
+      <Dialog open={!!selectedRecipe} onOpenChange={() => setSelectedRecipe(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Recipe Reviews</DialogTitle>
+          </DialogHeader>
+          {selectedRecipe && <RecipeReviews recipeId={selectedRecipe} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

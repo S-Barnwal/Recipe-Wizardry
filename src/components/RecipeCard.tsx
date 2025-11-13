@@ -1,7 +1,7 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Clock, Users, Flame, Share2, Copy, BookmarkPlus, Trash2 } from "lucide-react";
+import { Clock, Users, Flame, Share2, Copy, BookmarkPlus, Trash2, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Recipe {
@@ -19,10 +19,11 @@ interface RecipeCardProps {
   recipe: Recipe;
   onDelete?: () => void;
   onShare?: () => void;
+  onAddToMealPlan?: () => void;
   showActions?: boolean;
 }
 
-const RecipeCard = ({ recipe, onDelete, onShare, showActions }: RecipeCardProps) => {
+const RecipeCard = ({ recipe, onDelete, onShare, onAddToMealPlan, showActions }: RecipeCardProps) => {
   const { toast } = useToast();
 
   const handleCopy = () => {
@@ -78,7 +79,13 @@ const RecipeCard = ({ recipe, onDelete, onShare, showActions }: RecipeCardProps)
         </div>
 
         {showActions && (
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {onAddToMealPlan && (
+              <Button variant="outline" size="sm" onClick={onAddToMealPlan}>
+                <Calendar className="h-4 w-4 mr-2" />
+                Add to Meal Plan
+              </Button>
+            )}
             {onShare && (
               <Button variant="outline" size="sm" onClick={onShare}>
                 <Share2 className="h-4 w-4 mr-2" />

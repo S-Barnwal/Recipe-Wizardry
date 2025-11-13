@@ -10,6 +10,8 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import MyRecipes from "./pages/MyRecipes";
 import Community from "./pages/Community";
+import Profile from "./pages/Profile";
+import MealPlanner from "./pages/MealPlanner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/meal-planner" element={<MealPlanner />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
