@@ -66,29 +66,38 @@ const VoiceInput = ({ onTranscript }: VoiceInputProps) => {
       reader.onloadend = async () => {
         const base64Audio = (reader.result as string).split(",")[1];
         
-        // Create a simple transcription (for demo purposes)
-        // In production, you'd use a real speech-to-text API
         toast({
           title: "Processing...",
           description: "Converting speech to text",
         });
         
-        // Simulate transcription (you would call a real API here)
-        setTimeout(() => {
-          const mockTranscription = "tomatoes, onions, garlic, pasta";
-          onTranscript(mockTranscription);
-          setIsProcessing(false);
-          
+        // Call voice-to-text edge function
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke('voice-to-text', {
+          body: { audio: base64Audio }
+        });
+
+        setIsProcessing(false);
+
+        if (error) {
+          throw error;
+        }
+
+        if (data?.text) {
+          onTranscript(data.text);
           toast({
             title: "Success!",
             description: "Voice input processed",
           });
-        }, 1500);
+        } else {
+          throw new Error("No transcription received");
+        }
       };
     } catch (error) {
+      console.error("Error processing audio:", error);
       toast({
         title: "Error",
-        description: "Failed to process audio",
+        description: error instanceof Error ? error.message : "Failed to process audio",
         variant: "destructive",
       });
       setIsProcessing(false);

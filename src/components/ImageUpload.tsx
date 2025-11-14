@@ -6,9 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 interface ImageUploadProps {
   onGenerate: (file: File) => void;
   isLoading: boolean;
+  similarImages?: { image_url: string; dish_name: string; ingredients: string[] }[];
 }
 
-const ImageUpload = ({ onGenerate, isLoading }: ImageUploadProps) => {
+const ImageUpload = ({ onGenerate, isLoading, similarImages }: ImageUploadProps) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,8 +69,9 @@ const ImageUpload = ({ onGenerate, isLoading }: ImageUploadProps) => {
   };
 
   return (
-    <div className="glass-card rounded-3xl p-8 shadow-lg hover:shadow-xl transition-smooth">
-      <div className="flex items-center gap-3 mb-6">
+    <div>
+      <div className="glass-card rounded-3xl p-8 shadow-lg hover:shadow-xl transition-smooth">
+        <div className="flex items-center gap-3 mb-6">
         <div className="p-3 rounded-full bg-secondary/20">
           <ImageIcon className="h-6 w-6 text-secondary-foreground" />
         </div>
@@ -154,6 +156,25 @@ const ImageUpload = ({ onGenerate, isLoading }: ImageUploadProps) => {
         <p className="text-xs text-center text-muted-foreground mt-2">
           Image ready for detection
         </p>
+      )}
+      </div>
+
+      {similarImages && similarImages.length > 0 && (
+        <div className="glass-card rounded-3xl p-6 shadow-lg hover:shadow-xl transition-smooth mt-6">
+          <h3 className="text-xl font-semibold mb-4">Similar Dishes in Database</h3>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {similarImages.map((img, idx) => (
+              <div key={idx} className="space-y-2">
+                <img
+                  src={img.image_url}
+                  alt={img.dish_name}
+                  className="w-full h-32 object-cover rounded-lg"
+                />
+                <p className="text-sm font-medium text-center">{img.dish_name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

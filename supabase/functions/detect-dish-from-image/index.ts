@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,6 +22,9 @@ serve(async (req) => {
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
       return new Response(
@@ -135,6 +139,24 @@ Be strict about validating that the image contains food.`;
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('Detected dish:', recipe.dish_name || recipe.name);
+
+    // Fetch similar dish images from database
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+    
+    const { data: dishImages, error: dbError } = await supabase
+      .from('dish_images')
+      .select('*')
+      .ilike('dish_name', `%${recipe.dish_name || recipe.name}%`)
+      .limit(5);
+
+    if (dbError) {
+      console.error("Error fetching dish images:", dbError);
+    }
+
+    // Add similar images to response
+    recipe.similar_images = dishImages || [];
 
     console.log('Dish detected and recipe generated successfully');
 

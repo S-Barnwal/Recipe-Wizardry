@@ -71,6 +71,30 @@ export type Database = {
         }
         Relationships: []
       }
+      dish_images: {
+        Row: {
+          created_at: string | null
+          dish_name: string
+          id: string
+          image_url: string
+          ingredients: Json
+        }
+        Insert: {
+          created_at?: string | null
+          dish_name: string
+          id?: string
+          image_url: string
+          ingredients: Json
+        }
+        Update: {
+          created_at?: string | null
+          dish_name?: string
+          id?: string
+          image_url?: string
+          ingredients?: Json
+        }
+        Relationships: []
+      }
       dish_ingredients: {
         Row: {
           dish_id: string | null
