@@ -12,9 +12,11 @@ import { Loader2, Save } from "lucide-react";
 
 const Index = () => {
   const [recipe, setRecipe] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [isLoadingIngredients, setIsLoadingIngredients] = useState(false);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [similarImages, setSimilarImages] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,8 +34,9 @@ const Index = () => {
   };
 
   const handleIngredientGenerate = async (ingredients: string[]) => {
-    setIsLoading(true);
+    setIsLoadingIngredients(true);
     setRecipe(null);
+    setSimilarImages([]);
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
@@ -66,13 +69,14 @@ const Index = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingIngredients(false);
     }
   };
 
   const handleImageGenerate = async (file: File) => {
-    setIsLoading(true);
+    setIsLoadingImage(true);
     setRecipe(null);
+    setSimilarImages([]);
     
     try {
       const reader = new FileReader();
@@ -101,11 +105,23 @@ const Index = () => {
         return;
       }
 
+      if (data?.error === 'not_food' || data?.recipe?.error === 'not_food') {
+        toast({
+          title: "Invalid Input",
+          description: data?.message || data?.recipe?.message || "This image does not appear to contain food. Please upload a food image.",
+          variant: "destructive",
+        });
+        setRecipe(null);
+        setSimilarImages([]);
+        return;
+      }
+
       if (data && data.recipe) {
         setRecipe(data.recipe);
+        setSimilarImages(data.recipe.similar_images || []);
         toast({
           title: "Dish detected!",
-          description: "Recipe generated from your image.",
+          description: `Recipe generated for ${data.recipe.dish_name || data.recipe.name}`,
         });
       }
     } catch (error: any) {
@@ -117,7 +133,7 @@ const Index = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingImage(false);
     }
   };
 
@@ -176,11 +192,13 @@ const Index = () => {
             <div className="grid md:grid-cols-2 gap-8 mb-16">
               <IngredientInput
                 onGenerate={handleIngredientGenerate}
-                isLoading={isLoading}
+                isLoading={isLoadingIngredients}
               />
+
               <ImageUpload
                 onGenerate={handleImageGenerate}
-                isLoading={isLoading}
+                isLoading={isLoadingImage}
+                similarImages={similarImages}
               />
             </div>
 
