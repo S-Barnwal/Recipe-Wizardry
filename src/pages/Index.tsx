@@ -5,10 +5,13 @@ import Hero from "@/components/Hero";
 import IngredientInput from "@/components/IngredientInput";
 import ImageUpload from "@/components/ImageUpload";
 import RecipeCard from "@/components/RecipeCard";
+import BulkImageUpload from "@/components/BulkImageUpload";
+import DishComparison from "@/components/DishComparison";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Scale } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
   const [recipe, setRecipe] = useState<any>(null);
@@ -17,6 +20,7 @@ const Index = () => {
   const [user, setUser] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [similarImages, setSimilarImages] = useState<any[]>([]);
+  const [allRecipes, setAllRecipes] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,6 +59,7 @@ const Index = () => {
 
       if (data && data.recipe) {
         setRecipe(data.recipe);
+        setAllRecipes([...allRecipes, data.recipe]);
         toast({
           title: "Recipe generated!",
           description: "Your delicious recipe is ready.",
@@ -189,22 +194,38 @@ const Index = () => {
         
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid md:grid-cols-2 gap-8 mb-16">
-              <IngredientInput
-                onGenerate={handleIngredientGenerate}
-                isLoading={isLoadingIngredients}
-              />
-
-              <ImageUpload
-                onGenerate={handleImageGenerate}
-                isLoading={isLoadingImage}
-                similarImages={similarImages}
-              />
-            </div>
+            <Tabs defaultValue="single" className="w-full mb-16">
+              <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="single">Single Upload</TabsTrigger>
+                <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="single">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <IngredientInput
+                    onGenerate={handleIngredientGenerate}
+                    isLoading={isLoadingIngredients}
+                  />
+                  <ImageUpload
+                    onGenerate={handleImageGenerate}
+                    isLoading={isLoadingImage}
+                    similarImages={similarImages}
+                  />
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="bulk">
+                <BulkImageUpload onComplete={() => toast({ title: "Bulk upload complete!" })} />
+              </TabsContent>
+            </Tabs>
 
             {recipe && (
               <div className="max-w-4xl mx-auto space-y-4">
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                  {allRecipes.length > 1 && (
+                    <DishComparison recipes={allRecipes} />
+                  )}
+                  <div className="flex-1"></div>
                   <Button
                     onClick={handleSaveRecipe}
                     disabled={saving || !user}
