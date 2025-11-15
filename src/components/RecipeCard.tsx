@@ -1,6 +1,7 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { Progress } from "./ui/progress";
 import { Clock, Users, Flame, Share2, Copy, BookmarkPlus, Trash2, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -53,12 +54,19 @@ const RecipeCard = ({ recipe, onDelete, onShare, onAddToMealPlan, showActions }:
     <div className="animate-scale-in">
       <Card className="glass-card rounded-3xl p-8 shadow-xl">
         <div className="flex items-start justify-between mb-6">
-          <div>
+          <div className="flex-1">
             <h2 className="text-3xl font-bold mb-2">{recipe.name}</h2>
             {recipe.confidence && (
-              <Badge variant="secondary" className="text-sm">
-                {recipe.confidence}% Confidence
-              </Badge>
+              <div className="space-y-2 mt-3 max-w-md">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground font-medium">AI Detection Confidence</span>
+                  <span className="font-bold text-primary">{recipe.confidence.toFixed(1)}%</span>
+                </div>
+                <Progress value={recipe.confidence} className="h-2" />
+                <p className="text-xs text-muted-foreground">
+                  {recipe.confidence >= 90 ? "Very High" : recipe.confidence >= 70 ? "High" : recipe.confidence >= 50 ? "Moderate" : "Low"} confidence in dish detection
+                </p>
+              </div>
             )}
           </div>
           <div className="flex gap-2">

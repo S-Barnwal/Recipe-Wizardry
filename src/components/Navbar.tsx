@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
-import { ChefHat, Menu, X, User, Calendar, LogOut } from "lucide-react";
+import { ChefHat, Menu, X, User, Calendar, LogOut, Database } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { NavLink } from "./NavLink";
 
@@ -96,6 +96,10 @@ const Navbar = () => {
                   <DropdownMenuItem onClick={() => navigate("/meal-planner")}>
                     <Calendar className="h-4 w-4 mr-2" />
                     Meal Planner
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/dataset")}>
+                    <Database className="h-4 w-4 mr-2" />
+                    Dataset Management
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="h-4 w-4 mr-2" />
