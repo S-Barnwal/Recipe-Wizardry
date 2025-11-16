@@ -7,6 +7,8 @@ import ImageUpload from "@/components/ImageUpload";
 import RecipeCard from "@/components/RecipeCard";
 import BulkImageUpload from "@/components/BulkImageUpload";
 import DishComparison from "@/components/DishComparison";
+import FoodRecommendations from "@/components/FoodRecommendations";
+import PantryManagement from "@/components/PantryManagement";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -194,18 +196,43 @@ const Index = () => {
         
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
+            {/* Food Recommendations */}
+            <FoodRecommendations onCategorySelect={(category) => {
+              toast({
+                title: "Category Selected",
+                description: `Exploring ${category} recipes`,
+              });
+            }} />
+
+            {/* Pantry Management */}
+            <div className="max-w-4xl mx-auto mb-12">
+              <PantryManagement />
+            </div>
+
+            {/* Recipe Creation Tabs */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-3">Create Your Recipe</h2>
+              <p className="text-muted-foreground">Choose your preferred input method</p>
+            </div>
+
             <Tabs defaultValue="single" className="w-full mb-16">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="single">Single Upload</TabsTrigger>
-                <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 mb-8">
+                <TabsTrigger value="text">Text Input</TabsTrigger>
+                <TabsTrigger value="single">Single Image</TabsTrigger>
+                <TabsTrigger value="bulk">Bulk Images</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="single">
-                <div className="grid md:grid-cols-2 gap-8">
+              <TabsContent value="text">
+                <div className="max-w-4xl mx-auto">
                   <IngredientInput
                     onGenerate={handleIngredientGenerate}
                     isLoading={isLoadingIngredients}
                   />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="single">
+                <div className="max-w-4xl mx-auto">
                   <ImageUpload
                     onGenerate={handleImageGenerate}
                     isLoading={isLoadingImage}
@@ -215,7 +242,10 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="bulk">
-                <BulkImageUpload onComplete={() => toast({ title: "Bulk upload complete!" })} />
+                <BulkImageUpload onComplete={() => toast({ 
+                  title: "Bulk processing complete!",
+                  description: "All images have been processed and recipes generated"
+                })} />
               </TabsContent>
             </Tabs>
 

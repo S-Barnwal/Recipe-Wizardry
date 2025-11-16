@@ -58,6 +58,7 @@ const BulkImageUpload = ({ onComplete }: BulkImageUploadProps) => {
 
     const totalFiles = files.length;
     const updatedFiles = [...files];
+    const generatedRecipes: any[] = [];
 
     for (let i = 0; i < totalFiles; i++) {
       updatedFiles[i].status = "uploading";
@@ -74,7 +75,7 @@ const BulkImageUpload = ({ onComplete }: BulkImageUploadProps) => {
 
         const imageBase64 = await base64Promise;
 
-        // Detect dish
+        // Detect dish and generate recipe
         const { data, error } = await supabase.functions.invoke(
           "detect-dish-from-image",
           {
@@ -82,17 +83,20 @@ const BulkImageUpload = ({ onComplete }: BulkImageUploadProps) => {
           }
         );
 
-        if (error || data?.error === "not_food") {
+        if (error) {
           updatedFiles[i].status = "error";
-          updatedFiles[i].message =
-            data?.message || "Not a valid food image";
+          updatedFiles[i].message = error.message || "Detection failed";
+        } else if (data?.error === "not_food") {
+          updatedFiles[i].status = "error";
+          updatedFiles[i].message = data?.message || "Not a valid food image - Please provide a food image";
         } else if (data?.recipe) {
           updatedFiles[i].status = "success";
           updatedFiles[i].detectedDish = data.recipe.name;
-          updatedFiles[i].message = `Detected: ${data.recipe.name}`;
+          updatedFiles[i].message = `✓ ${data.recipe.name}`;
+          generatedRecipes.push(data.recipe);
         } else {
           updatedFiles[i].status = "error";
-          updatedFiles[i].message = "Detection failed";
+          updatedFiles[i].message = "Detection failed - Invalid response";
         }
       } catch (error: any) {
         updatedFiles[i].status = "error";
@@ -107,12 +111,16 @@ const BulkImageUpload = ({ onComplete }: BulkImageUploadProps) => {
     const failCount = updatedFiles.filter((f) => f.status === "error").length;
 
     toast({
-      title: "Bulk upload complete",
-      description: `${successCount} successful, ${failCount} failed`,
+      title: "Bulk processing complete",
+      description: `${successCount} recipes generated, ${failCount} failed`,
     });
 
     setUploading(false);
-    onComplete?.();
+    
+    // Pass generated recipes back to parent
+    if (onComplete && generatedRecipes.length > 0) {
+      onComplete();
+    }
   };
 
   return (

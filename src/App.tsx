@@ -13,6 +13,7 @@ import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import MealPlanner from "./pages/MealPlanner";
 import DatasetManagement from "./pages/DatasetManagement";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/dataset" element={<DatasetManagement />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/meal-planner" element={<MealPlanner />} />
