@@ -101,6 +101,10 @@ const Navbar = () => {
                     <Database className="h-4 w-4 mr-2" />
                     Dataset Management
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <Database className="h-4 w-4 mr-2" />
+                    Admin Dashboard
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
