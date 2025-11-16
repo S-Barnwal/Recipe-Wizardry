@@ -48,30 +48,43 @@ serve(async (req) => {
       throw new Error('No audio data provided');
     }
 
-    console.log('Processing audio transcription...');
+    console.log('Processing audio transcription with Lovable AI...');
+
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
+    }
 
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
     
-    // Prepare form data
+    // Prepare form data for Lovable AI
     const formData = new FormData();
     const blob = new Blob([binaryAudio], { type: 'audio/webm' });
     formData.append('file', blob, 'audio.webm');
     formData.append('model', 'whisper-1');
 
-    // Send to OpenAI
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    // Send to Lovable AI Gateway
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
       },
       body: formData,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${errorText}`);
+      console.error('Lovable AI error:', errorText);
+      
+      if (response.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again later.');
+      }
+      if (response.status === 402) {
+        throw new Error('Payment required. Please add credits to your Lovable workspace.');
+      }
+      
+      throw new Error(`Lovable AI error: ${errorText}`);
     }
 
     const result = await response.json();
