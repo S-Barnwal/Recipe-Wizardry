@@ -5,20 +5,19 @@ import Hero from "@/components/Hero";
 import IngredientInput from "@/components/IngredientInput";
 import ImageUpload from "@/components/ImageUpload";
 import RecipeCard from "@/components/RecipeCard";
-import BulkImageUpload from "@/components/BulkImageUpload";
 import DishComparison from "@/components/DishComparison";
 import FoodRecommendations from "@/components/FoodRecommendations";
-import PantryManagement from "@/components/PantryManagement";
+import LeftoverDishGenerator from "@/components/LeftoverDishGenerator";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save, Scale } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Save } from "lucide-react";
 
 const Index = () => {
   const [recipe, setRecipe] = useState<any>(null);
   const [isLoadingIngredients, setIsLoadingIngredients] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [isLoadingLeftovers, setIsLoadingLeftovers] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [similarImages, setSimilarImages] = useState<any[]>([]);
@@ -26,55 +25,33 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
     checkUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-  };
 
   const handleIngredientGenerate = async (ingredients: string[]) => {
     setIsLoadingIngredients(true);
     setRecipe(null);
     setSimilarImages([]);
-    
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
         body: { ingredients }
       });
-
-      if (error) {
-        console.error('Error generating recipe:', error);
-        toast({
-          title: "Error generating recipe",
-          description: error.message || "Please try again",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data && data.recipe) {
+      if (error) throw error;
+      if (data?.recipe) {
         setRecipe(data.recipe);
-        setAllRecipes([...allRecipes, data.recipe]);
-        toast({
-          title: "Recipe generated!",
-          description: "Your delicious recipe is ready.",
-        });
+        setAllRecipes(prev => [...prev, data.recipe]);
+        toast({ title: "Recipe generated!", description: "Your delicious recipe is ready." });
       }
     } catch (error: any) {
-      console.error('Error:', error);
-      const errorMessage = error.response?.data?.error || error.message;
-      toast({
-        title: "Error",
-        description: errorMessage || "Failed to generate recipe. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message || "Failed to generate recipe.", variant: "destructive" });
     } finally {
       setIsLoadingIngredients(false);
     }
@@ -84,78 +61,87 @@ const Index = () => {
     setIsLoadingImage(true);
     setRecipe(null);
     setSimilarImages([]);
-    
     try {
       const reader = new FileReader();
-      const base64Promise = new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          resolve(result);
-        };
+      const imageBase64 = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result as string);
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
 
-      const imageBase64 = await base64Promise;
-
       const { data, error } = await supabase.functions.invoke('detect-dish-from-image', {
         body: { imageBase64 }
       });
-
-      if (error) {
-        console.error('Error detecting dish:', error);
-        toast({
-          title: "Error detecting dish",
-          description: error.message || "Please try again",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (error) throw error;
 
       if (data?.error === 'not_food' || data?.recipe?.error === 'not_food') {
         toast({
-          title: "Invalid Input",
+          title: "❌ Not Food!",
           description: data?.message || data?.recipe?.message || "This image does not appear to contain food. Please upload a food image.",
           variant: "destructive",
         });
-        setRecipe(null);
-        setSimilarImages([]);
         return;
       }
 
-      if (data && data.recipe) {
+      if (data?.recipe) {
         setRecipe(data.recipe);
         setSimilarImages(data.recipe.similar_images || []);
-        toast({
-          title: "Dish detected!",
-          description: `Recipe generated for ${data.recipe.dish_name || data.recipe.name}`,
-        });
+        setAllRecipes(prev => [...prev, data.recipe]);
+        toast({ title: "Dish detected!", description: `Recipe generated for ${data.recipe.name}` });
       }
     } catch (error: any) {
-      console.error('Error:', error);
-      const errorMessage = error.response?.data?.error || error.message;
-      toast({
-        title: "Error",
-        description: errorMessage || "Failed to detect dish. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message || "Failed to detect dish.", variant: "destructive" });
     } finally {
       setIsLoadingImage(false);
     }
   };
 
+  const handleDishNameGenerate = async (dishName: string) => {
+    setIsLoadingImage(true);
+    setRecipe(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
+        body: { ingredients: [dishName], isDishName: true }
+      });
+      if (error) throw error;
+      if (data?.recipe) {
+        setRecipe(data.recipe);
+        setAllRecipes(prev => [...prev, data.recipe]);
+        toast({ title: "Recipe generated!", description: `Recipe for ${dishName} is ready.` });
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to generate recipe.", variant: "destructive" });
+    } finally {
+      setIsLoadingImage(false);
+    }
+  };
+
+  const handleLeftoverGenerate = async (leftovers: string[]) => {
+    setIsLoadingLeftovers(true);
+    setRecipe(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
+        body: { ingredients: leftovers }
+      });
+      if (error) throw error;
+      if (data?.recipe) {
+        setRecipe(data.recipe);
+        setAllRecipes(prev => [...prev, data.recipe]);
+        toast({ title: "Leftover recipe generated!", description: "A new dish from your leftovers!" });
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to generate recipe.", variant: "destructive" });
+    } finally {
+      setIsLoadingLeftovers(false);
+    }
+  };
+
   const handleSaveRecipe = async () => {
     if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to save recipes",
-        variant: "destructive",
-      });
+      toast({ title: "Sign in required", description: "Please sign in to save recipes", variant: "destructive" });
       return;
     }
-
     if (!recipe) return;
-
     setSaving(true);
     try {
       const { error } = await supabase.from("user_recipes").insert({
@@ -169,19 +155,10 @@ const Index = () => {
         calories: recipe.calories,
         confidence_score: recipe.confidence,
       });
-
       if (error) throw error;
-
-      toast({
-        title: "Recipe saved!",
-        description: "Check it out in My Recipes",
-      });
+      toast({ title: "Recipe saved!", description: "Check it out in My Recipes" });
     } catch (error: any) {
-      toast({
-        title: "Error saving recipe",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error saving recipe", description: error.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -190,87 +167,47 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
       <main className="flex-1">
         <Hero />
-        
+
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
             {/* Food Recommendations */}
             <FoodRecommendations onCategorySelect={(category) => {
-              toast({
-                title: "Category Selected",
-                description: `Exploring ${category} recipes`,
-              });
+              toast({ title: "Category Selected", description: `Exploring ${category} recipes` });
             }} />
 
-            {/* Pantry Management */}
-            <div className="max-w-4xl mx-auto mb-12">
-              <PantryManagement />
-            </div>
-
-            {/* Recipe Creation Tabs */}
-            <div className="text-center mb-8">
+            {/* Create Your Recipe */}
+            <div id="create-recipe" className="text-center mb-10 pt-8">
               <h2 className="text-3xl font-bold mb-3">Create Your Recipe</h2>
               <p className="text-muted-foreground">Choose your preferred input method</p>
             </div>
 
-            <Tabs defaultValue="single" className="w-full mb-16">
-              <TabsList className="grid w-full grid-cols-3 mb-8">
-                <TabsTrigger value="text">Text Input</TabsTrigger>
-                <TabsTrigger value="single">Single Image</TabsTrigger>
-                <TabsTrigger value="bulk">Bulk Images</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="text">
-                <div className="max-w-4xl mx-auto">
-                  <IngredientInput
-                    onGenerate={handleIngredientGenerate}
-                    isLoading={isLoadingIngredients}
-                  />
-                </div>
-              </TabsContent>
+            {/* Three sections side by side on large screens */}
+            <div className="space-y-8">
+              <IngredientInput onGenerate={handleIngredientGenerate} isLoading={isLoadingIngredients} />
 
-              <TabsContent value="single">
-                <div className="max-w-4xl mx-auto">
-                  <ImageUpload
-                    onGenerate={handleImageGenerate}
-                    isLoading={isLoadingImage}
-                    similarImages={similarImages}
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="bulk">
-                <BulkImageUpload onComplete={() => toast({ 
-                  title: "Bulk processing complete!",
-                  description: "All images have been processed and recipes generated"
-                })} />
-              </TabsContent>
-            </Tabs>
+              <ImageUpload
+                onGenerate={handleImageGenerate}
+                onDishNameGenerate={handleDishNameGenerate}
+                isLoading={isLoadingImage}
+                similarImages={similarImages}
+              />
 
+              <LeftoverDishGenerator onGenerate={handleLeftoverGenerate} isLoading={isLoadingLeftovers} />
+            </div>
+
+            {/* Recipe Result */}
             {recipe && (
-              <div className="max-w-4xl mx-auto space-y-4">
+              <div className="max-w-4xl mx-auto space-y-4 mt-12">
                 <div className="flex justify-between items-center">
-                  {allRecipes.length > 1 && (
-                    <DishComparison recipes={allRecipes} />
-                  )}
-                  <div className="flex-1"></div>
-                  <Button
-                    onClick={handleSaveRecipe}
-                    disabled={saving || !user}
-                    variant="default"
-                  >
+                  {allRecipes.length > 1 && <DishComparison recipes={allRecipes} />}
+                  <div className="flex-1" />
+                  <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default">
                     {saving ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Saving...
-                      </>
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
                     ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-2" />
-                        {user ? "Save Recipe" : "Sign in to Save"}
-                      </>
+                      <><Save className="h-4 w-4 mr-2" />{user ? "Save Recipe" : "Sign in to Save"}</>
                     )}
                   </Button>
                 </div>
@@ -280,7 +217,6 @@ const Index = () => {
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );
