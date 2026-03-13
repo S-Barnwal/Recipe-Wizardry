@@ -209,11 +209,39 @@ const Index = () => {
               <LeftoverDishGenerator onGenerate={handleLeftoverGenerate} isLoading={isLoadingLeftovers} />
             </div>
 
-            {/* Recipe Result */}
-            {recipe && (
+            {/* Recipe Results */}
+            {allRecipes.length > 0 && (
+              <div className="max-w-6xl mx-auto space-y-6 mt-12">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-3xl font-bold">🍽️ Generated Recipes ({allRecipes.length})</h2>
+                    <p className="text-muted-foreground">Click any recipe card to see full cooking method</p>
+                  </div>
+                  <div className="flex gap-2">
+                    {allRecipes.length > 1 && <DishComparison recipes={allRecipes} />}
+                    <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default">
+                      {saving ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                      ) : (
+                        <><Save className="h-4 w-4 mr-2" />{user ? "Save Recipe" : "Sign in to Save"}</>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Recipe Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {allRecipes.map((r, idx) => (
+                    <RecipeCard key={idx} recipe={r} compact />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Single recipe from image detection */}
+            {recipe && allRecipes.length === 0 && (
               <div className="max-w-4xl mx-auto space-y-4 mt-12">
                 <div className="flex justify-between items-center">
-                  {allRecipes.length > 1 && <DishComparison recipes={allRecipes} />}
                   <div className="flex-1" />
                   <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default">
                     {saving ? (
