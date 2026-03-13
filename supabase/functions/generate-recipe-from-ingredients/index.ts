@@ -130,13 +130,12 @@ Guidelines:
     console.log('AI Response:', aiResponse);
 
     // Parse the JSON response
-    let recipe;
+    let result;
     try {
-      // Extract JSON from markdown code blocks if present
       const jsonMatch = aiResponse.match(/```json\n([\s\S]*?)\n```/) || 
                        aiResponse.match(/```\n([\s\S]*?)\n```/) ||
                        [null, aiResponse];
-      recipe = JSON.parse(jsonMatch[1] || aiResponse);
+      result = JSON.parse(jsonMatch[1] || aiResponse);
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
       return new Response(
@@ -145,10 +144,13 @@ Guidelines:
       );
     }
 
-    console.log('Recipe generated successfully');
+    // Handle both single recipe and multiple recipes format
+    const recipes = result.recipes || [result];
+
+    console.log(`Generated ${recipes.length} recipes successfully`);
 
     return new Response(
-      JSON.stringify({ recipe }),
+      JSON.stringify({ recipes, recipe: recipes[0] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
