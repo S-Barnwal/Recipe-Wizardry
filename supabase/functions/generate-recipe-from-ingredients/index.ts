@@ -48,30 +48,41 @@ serve(async (req) => {
 
     console.log('Generating recipe for ingredients:', ingredients);
 
-    const systemPrompt = `You are an expert chef and recipe creator. Generate a complete, detailed recipe based on the provided ingredients. 
+    const systemPrompt = `You are an expert chef and recipe creator. Generate EXACTLY 20 different, diverse recipes based on the provided ingredients. Each recipe must be complete with detailed cooking methods.
     
-Format your response as a JSON object with the following structure:
+Format your response as a JSON object:
 {
-  "name": "Recipe name",
-  "confidence": 85-98 (how confident you are that this recipe will work well),
-  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity", ...],
-  "instructions": ["step 1", "step 2", ...],
-  "cookTime": "25 minutes",
-  "servings": 4,
-  "calories": 380,
-  "substitutions": {
-    "ingredient1": "alternative ingredient",
-    "ingredient2": "alternative ingredient"
-  }
+  "recipes": [
+    {
+      "name": "Recipe name",
+      "confidence": 85-98,
+      "cuisine": "Italian/Indian/Mexican/etc.",
+      "difficulty": "Easy/Medium/Hard",
+      "ingredients": ["ingredient 1 with exact quantity", "ingredient 2 with exact quantity", ...],
+      "instructions": ["Detailed step 1 with temperature, timing, and technique", "Detailed step 2...", ...],
+      "cookTime": "25 minutes",
+      "prepTime": "10 minutes",
+      "servings": 4,
+      "calories": 380,
+      "tips": "Pro chef tip for this dish",
+      "substitutions": {
+        "ingredient1": "alternative ingredient"
+      }
+    }
+  ]
 }
 
 Guidelines:
-- Be creative but practical
-- Include specific quantities
-- Provide clear, step-by-step instructions
-- Suggest suitable substitutions based on the available substitution data
-- Estimate cooking time, servings, and calories
-- Make sure the recipe is delicious and achievable${substitutionText}`;
+- Generate EXACTLY 20 unique recipes - mix different cuisines and cooking styles
+- Each recipe MUST have at least 5-8 detailed cooking steps explaining technique, heat level, timing
+- Include prep time AND cook time separately
+- Add a pro chef tip for each recipe
+- Include cuisine type and difficulty level
+- Vary the difficulty: include easy, medium, and hard recipes
+- Cover different meal types: appetizers, mains, sides, snacks, desserts if applicable
+- Be creative but practical with the given ingredients
+- Include specific quantities for all ingredients
+- Estimate realistic calories${substitutionText}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -83,9 +94,9 @@ Guidelines:
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Generate a recipe using these ingredients: ${ingredients.join(', ')}` }
+          { role: 'user', content: `Generate 20 different recipes using these ingredients: ${ingredients.join(', ')}. Make them diverse across cuisines and difficulty levels.` }
         ],
-        temperature: 0.8,
+        temperature: 0.9,
       }),
     });
 
