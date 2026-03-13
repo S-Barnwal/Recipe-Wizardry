@@ -126,14 +126,19 @@ const Index = () => {
   const handleLeftoverGenerate = async (leftovers: string[]) => {
     setIsLoadingLeftovers(true);
     setRecipe(null);
+    setAllRecipes([]);
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
         body: { ingredients: leftovers }
       });
       if (error) throw error;
-      if (data?.recipe) {
+      if (data?.recipes && data.recipes.length > 0) {
+        setAllRecipes(data.recipes);
+        setRecipe(data.recipes[0]);
+        toast({ title: "🎉 Leftover recipes generated!", description: `${data.recipes.length} new dishes from your leftovers!` });
+      } else if (data?.recipe) {
         setRecipe(data.recipe);
-        setAllRecipes(prev => [...prev, data.recipe]);
+        setAllRecipes([data.recipe]);
         toast({ title: "Leftover recipe generated!", description: "A new dish from your leftovers!" });
       }
     } catch (error: any) {
