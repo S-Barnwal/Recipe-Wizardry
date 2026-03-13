@@ -40,14 +40,19 @@ const Index = () => {
     setIsLoadingIngredients(true);
     setRecipe(null);
     setSimilarImages([]);
+    setAllRecipes([]);
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
         body: { ingredients }
       });
       if (error) throw error;
-      if (data?.recipe) {
+      if (data?.recipes && data.recipes.length > 0) {
+        setAllRecipes(data.recipes);
+        setRecipe(data.recipes[0]);
+        toast({ title: "🎉 Recipes generated!", description: `${data.recipes.length} delicious recipes are ready!` });
+      } else if (data?.recipe) {
         setRecipe(data.recipe);
-        setAllRecipes(prev => [...prev, data.recipe]);
+        setAllRecipes([data.recipe]);
         toast({ title: "Recipe generated!", description: "Your delicious recipe is ready." });
       }
     } catch (error: any) {
