@@ -75,9 +75,11 @@ const Index = () => {
       if (error) throw error;
 
       if (data?.error === 'not_food' || data?.recipe?.error === 'not_food') {
+        const msg = data?.message || data?.recipe?.funny_message || data?.recipe?.message || "Not food!";
+        const score = data?.foodness_score || data?.recipe?.foodness_score || 0;
         toast({
-          title: "❌ Not Food!",
-          description: data?.message || data?.recipe?.message || "This image does not appear to contain food. Please upload a food image.",
+          title: `😂 Not Food! (${score}% food-ness)`,
+          description: msg,
           variant: "destructive",
         });
         return;

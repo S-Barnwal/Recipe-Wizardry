@@ -88,7 +88,7 @@ const BulkImageUpload = ({ onComplete }: BulkImageUploadProps) => {
           updatedFiles[i].message = error.message || "Detection failed";
         } else if (data?.error === "not_food") {
           updatedFiles[i].status = "error";
-          updatedFiles[i].message = data?.message || "Not a valid food image - Please provide a food image";
+          updatedFiles[i].message = data?.message || "😂 Not food!";
         } else if (data?.recipe) {
           updatedFiles[i].status = "success";
           updatedFiles[i].detectedDish = data.recipe.name;
