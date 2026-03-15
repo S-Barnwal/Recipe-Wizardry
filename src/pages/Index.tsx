@@ -11,7 +11,7 @@ import LeftoverDishGenerator from "@/components/LeftoverDishGenerator";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Share2 } from "lucide-react";
 
 const Index = () => {
   const [recipe, setRecipe] = useState<any>(null);
