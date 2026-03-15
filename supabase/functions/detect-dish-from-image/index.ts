@@ -144,13 +144,17 @@ IMPORTANT: Be creative and different with each funny response. Use emojis. Make 
                        [null, aiResponse];
       recipe = JSON.parse(jsonMatch[1] || aiResponse);
       
-      // Check if AI detected non-food
+      // Check if AI detected non-food — return as success with the funny data so frontend can display it
       if (recipe.error === 'not_food') {
         return new Response(
           JSON.stringify({ 
-            error: recipe.message || 'The image does not appear to contain food. Please upload a clear image of a dish or meal.' 
+            error: 'not_food',
+            foodness_score: recipe.foodness_score || 0,
+            message: recipe.funny_message || recipe.message || 'That does not look like food!',
+            detected_object: recipe.detected_object || 'unknown',
+            recipe: recipe
           }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
     } catch (parseError) {
