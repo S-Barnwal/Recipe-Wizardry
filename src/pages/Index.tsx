@@ -11,7 +11,7 @@ import LeftoverDishGenerator from "@/components/LeftoverDishGenerator";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Share2 } from "lucide-react";
 
 const Index = () => {
   const [recipe, setRecipe] = useState<any>(null);
@@ -20,6 +20,7 @@ const Index = () => {
   const [isLoadingLeftovers, setIsLoadingLeftovers] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [similarImages, setSimilarImages] = useState<any[]>([]);
   const [allRecipes, setAllRecipes] = useState<any[]>([]);
   const { toast } = useToast();
@@ -178,6 +179,35 @@ const Index = () => {
     }
   };
 
+  const handleShareToCommunity = async () => {
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to share recipes", variant: "destructive" });
+      return;
+    }
+    if (!recipe) return;
+    setSharing(true);
+    try {
+      const { error } = await supabase.from("community_recipes").insert({
+        user_id: user.id,
+        dish_name: recipe.name,
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+        prep_time: parseInt(recipe.prepTime) || null,
+        cook_time: parseInt(recipe.cookTime) || null,
+        servings: recipe.servings,
+        calories: recipe.calories,
+        confidence_score: recipe.confidence,
+        cuisine_type: recipe.cuisine || null,
+      });
+      if (error) throw error;
+      toast({ title: "🎉 Shared to Community!", description: "Your recipe is now visible to everyone!" });
+    } catch (error: any) {
+      toast({ title: "Error sharing recipe", description: error.message, variant: "destructive" });
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -219,13 +249,20 @@ const Index = () => {
                     <h2 className="text-3xl font-bold">🍽️ Generated Recipes ({allRecipes.length})</h2>
                     <p className="text-muted-foreground">Click any recipe card to see full cooking method</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     {allRecipes.length > 1 && <DishComparison recipes={allRecipes} />}
-                    <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default">
+                    <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default" size="sm">
                       {saving ? (
-                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                        <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" />Saving...</>
                       ) : (
-                        <><Save className="h-4 w-4 mr-2" />{user ? "Save Recipe" : "Sign in to Save"}</>
+                        <><Save className="h-4 w-4 mr-1.5" />{user ? "Save" : "Sign in to Save"}</>
+                      )}
+                    </Button>
+                    <Button onClick={handleShareToCommunity} disabled={sharing || !user} variant="outline" size="sm">
+                      {sharing ? (
+                        <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" />Sharing...</>
+                      ) : (
+                        <><Share2 className="h-4 w-4 mr-1.5" />{user ? "Share to Community" : "Sign in to Share"}</>
                       )}
                     </Button>
                   </div>
