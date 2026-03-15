@@ -94,7 +94,7 @@ const Index = () => {
       if (data?.recipe) {
         setRecipe(data.recipe);
         setSimilarImages(data.recipe.similar_images || []);
-        setAllRecipes(prev => [...prev, data.recipe]);
+        setAllRecipes([data.recipe]);
         toast({ title: "Dish detected!", description: `Recipe generated for ${data.recipe.name}` });
       }
     } catch (error: any) {
