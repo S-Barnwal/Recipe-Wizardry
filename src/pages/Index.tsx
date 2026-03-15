@@ -179,6 +179,35 @@ const Index = () => {
     }
   };
 
+  const handleShareToCommunity = async () => {
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to share recipes", variant: "destructive" });
+      return;
+    }
+    if (!recipe) return;
+    setSharing(true);
+    try {
+      const { error } = await supabase.from("community_recipes").insert({
+        user_id: user.id,
+        dish_name: recipe.name,
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+        prep_time: parseInt(recipe.prepTime) || null,
+        cook_time: parseInt(recipe.cookTime) || null,
+        servings: recipe.servings,
+        calories: recipe.calories,
+        confidence_score: recipe.confidence,
+        cuisine_type: recipe.cuisine || null,
+      });
+      if (error) throw error;
+      toast({ title: "🎉 Shared to Community!", description: "Your recipe is now visible to everyone!" });
+    } catch (error: any) {
+      toast({ title: "Error sharing recipe", description: error.message, variant: "destructive" });
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
