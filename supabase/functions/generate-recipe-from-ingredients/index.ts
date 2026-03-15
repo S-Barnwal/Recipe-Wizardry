@@ -129,13 +129,10 @@ Guidelines:
     
     console.log('AI Response:', aiResponse);
 
-    // Parse the JSON response
+    // Parse the JSON response with robust extraction
     let result;
     try {
-      const jsonMatch = aiResponse.match(/```json\n([\s\S]*?)\n```/) || 
-                       aiResponse.match(/```\n([\s\S]*?)\n```/) ||
-                       [null, aiResponse];
-      result = JSON.parse(jsonMatch[1] || aiResponse);
+      result = extractJsonFromResponse(aiResponse);
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
       return new Response(
