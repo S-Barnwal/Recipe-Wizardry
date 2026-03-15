@@ -20,6 +20,7 @@ const Index = () => {
   const [isLoadingLeftovers, setIsLoadingLeftovers] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [similarImages, setSimilarImages] = useState<any[]>([]);
   const [allRecipes, setAllRecipes] = useState<any[]>([]);
   const { toast } = useToast();
