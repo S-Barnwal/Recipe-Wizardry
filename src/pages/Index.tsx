@@ -115,7 +115,7 @@ const Index = () => {
       if (error) throw error;
       if (data?.recipe) {
         setRecipe(data.recipe);
-        setAllRecipes(prev => [...prev, data.recipe]);
+        setAllRecipes([data.recipe]);
         toast({ title: "Recipe generated!", description: `Recipe for ${dishName} is ready.` });
       }
     } catch (error: any) {
