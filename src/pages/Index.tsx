@@ -66,6 +66,7 @@ const Index = () => {
     setIsLoadingImage(true);
     setRecipe(null);
     setSimilarImages([]);
+    setAllRecipes([]);
     try {
       const reader = new FileReader();
       const imageBase64 = await new Promise<string>((resolve, reject) => {
@@ -93,7 +94,7 @@ const Index = () => {
       if (data?.recipe) {
         setRecipe(data.recipe);
         setSimilarImages(data.recipe.similar_images || []);
-        setAllRecipes(prev => [...prev, data.recipe]);
+        setAllRecipes([data.recipe]);
         toast({ title: "Dish detected!", description: `Recipe generated for ${data.recipe.name}` });
       }
     } catch (error: any) {
@@ -106,6 +107,7 @@ const Index = () => {
   const handleDishNameGenerate = async (dishName: string) => {
     setIsLoadingImage(true);
     setRecipe(null);
+    setAllRecipes([]);
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
         body: { ingredients: [dishName], isDishName: true }
@@ -113,7 +115,7 @@ const Index = () => {
       if (error) throw error;
       if (data?.recipe) {
         setRecipe(data.recipe);
-        setAllRecipes(prev => [...prev, data.recipe]);
+        setAllRecipes([data.recipe]);
         toast({ title: "Recipe generated!", description: `Recipe for ${dishName} is ready.` });
       }
     } catch (error: any) {
