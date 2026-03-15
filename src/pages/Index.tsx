@@ -249,13 +249,20 @@ const Index = () => {
                     <h2 className="text-3xl font-bold">🍽️ Generated Recipes ({allRecipes.length})</h2>
                     <p className="text-muted-foreground">Click any recipe card to see full cooking method</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     {allRecipes.length > 1 && <DishComparison recipes={allRecipes} />}
-                    <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default">
+                    <Button onClick={handleSaveRecipe} disabled={saving || !user} variant="default" size="sm">
                       {saving ? (
-                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                        <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" />Saving...</>
                       ) : (
-                        <><Save className="h-4 w-4 mr-2" />{user ? "Save Recipe" : "Sign in to Save"}</>
+                        <><Save className="h-4 w-4 mr-1.5" />{user ? "Save" : "Sign in to Save"}</>
+                      )}
+                    </Button>
+                    <Button onClick={handleShareToCommunity} disabled={sharing || !user} variant="outline" size="sm">
+                      {sharing ? (
+                        <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" />Sharing...</>
+                      ) : (
+                        <><Share2 className="h-4 w-4 mr-1.5" />{user ? "Share to Community" : "Sign in to Share"}</>
                       )}
                     </Button>
                   </div>
