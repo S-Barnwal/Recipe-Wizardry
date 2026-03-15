@@ -66,6 +66,7 @@ const Index = () => {
     setIsLoadingImage(true);
     setRecipe(null);
     setSimilarImages([]);
+    setAllRecipes([]);
     try {
       const reader = new FileReader();
       const imageBase64 = await new Promise<string>((resolve, reject) => {
