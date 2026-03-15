@@ -107,6 +107,7 @@ const Index = () => {
   const handleDishNameGenerate = async (dishName: string) => {
     setIsLoadingImage(true);
     setRecipe(null);
+    setAllRecipes([]);
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-from-ingredients', {
         body: { ingredients: [dishName], isDishName: true }
