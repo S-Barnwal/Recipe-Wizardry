@@ -94,41 +94,17 @@ serve(async (req) => {
 
     console.log('Generating recipe for ingredients:', ingredients);
 
-    const systemPrompt = `You are an expert chef and recipe creator. Generate EXACTLY 20 different, diverse recipes based on the provided ingredients. Each recipe must be complete with detailed cooking methods.
-    
-Format your response as a JSON object:
-{
-  "recipes": [
-    {
-      "name": "Recipe name",
-      "confidence": 85-98,
-      "cuisine": "Italian/Indian/Mexican/etc.",
-      "difficulty": "Easy/Medium/Hard",
-      "ingredients": ["ingredient 1 with exact quantity", "ingredient 2 with exact quantity", ...],
-      "instructions": ["Detailed step 1 with temperature, timing, and technique", "Detailed step 2...", ...],
-      "cookTime": "25 minutes",
-      "prepTime": "10 minutes",
-      "servings": 4,
-      "calories": 380,
-      "tips": "Pro chef tip for this dish",
-      "substitutions": {
-        "ingredient1": "alternative ingredient"
-      }
-    }
-  ]
-}
+    const systemPrompt = `You are an expert chef. Generate EXACTLY 20 diverse recipes based on the provided ingredients. Keep each recipe concise but complete.
 
-Guidelines:
-- Generate EXACTLY 20 unique recipes - mix different cuisines and cooking styles
-- Each recipe MUST have at least 5-8 detailed cooking steps explaining technique, heat level, timing
-- Include prep time AND cook time separately
-- Add a pro chef tip for each recipe
-- Include cuisine type and difficulty level
-- Vary the difficulty: include easy, medium, and hard recipes
-- Cover different meal types: appetizers, mains, sides, snacks, desserts if applicable
-- Be creative but practical with the given ingredients
-- Include specific quantities for all ingredients
-- Estimate realistic calories${substitutionText}`;
+Return ONLY valid JSON, no markdown:
+{"recipes":[{"name":"Recipe name","confidence":90,"cuisine":"Italian","difficulty":"Easy","ingredients":["ingredient with qty"],"instructions":["Step 1","Step 2"],"cookTime":"25 min","prepTime":"10 min","servings":4,"calories":380,"tips":"Chef tip","substitutions":{"item":"alt"}}]}
+
+Rules:
+- 20 unique recipes, varied cuisines and difficulty
+- 5-6 instruction steps per recipe (concise but clear)
+- Include prep/cook time, servings, calories
+- Keep ingredient lists to 6-8 items max
+- Be concise to avoid truncation${substitutionText}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -140,9 +116,10 @@ Guidelines:
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Generate 20 different recipes using these ingredients: ${ingredients.join(', ')}. Make them diverse across cuisines and difficulty levels.` }
+          { role: 'user', content: `Generate 20 concise recipes using: ${ingredients.join(', ')}. Diverse cuisines and difficulty. Return valid JSON only.` }
         ],
-        temperature: 0.9,
+        temperature: 0.8,
+        max_tokens: 16000,
       }),
     });
 
