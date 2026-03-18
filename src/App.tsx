@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import MealPlanner from "./pages/MealPlanner";
 import DatasetManagement from "./pages/DatasetManagement";
 import AdminDashboard from "./pages/AdminDashboard";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
