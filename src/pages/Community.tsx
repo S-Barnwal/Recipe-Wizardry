@@ -24,6 +24,26 @@ import grilledChicken from "@/assets/grilled-chicken.jpg";
 import dessertChocolate from "@/assets/dessert-chocolate.jpg";
 import saladBowl from "@/assets/salad-bowl.jpg";
 import heroPasta from "@/assets/hero-pasta.jpg";
+// Indian dish-specific images
+import butterChicken from "@/assets/butter-chicken.jpg";
+import biryani from "@/assets/biryani.jpg";
+import masalaDosa from "@/assets/masala-dosa.jpg";
+import palakPaneer from "@/assets/palak-paneer.jpg";
+import choleBhature from "@/assets/chole-bhature.jpg";
+import samosa from "@/assets/samosa.jpg";
+import dalMakhani from "@/assets/dal-makhani.jpg";
+import tandooriChicken from "@/assets/tandoori-chicken.jpg";
+import gulabJamun from "@/assets/gulab-jamun.jpg";
+import jalebi from "@/assets/jalebi.jpg";
+import alooGobi from "@/assets/aloo-gobi.jpg";
+import paniPuri from "@/assets/pani-puri.jpg";
+import malaiKofta from "@/assets/malai-kofta.jpg";
+import paneerTikka from "@/assets/paneer-tikka.jpg";
+import chickenTikkaMasala from "@/assets/chicken-tikka-masala.jpg";
+import vadaPav from "@/assets/vada-pav.jpg";
+import rajmaChawal from "@/assets/rajma-chawal.jpg";
+import pavBhaji from "@/assets/pav-bhaji.jpg";
+import roganJosh from "@/assets/rogan-josh.jpg";
 
 const foodImages = [
   indianCurry, italianPasta, mexicanTacos, mediterraneanSalad,
@@ -31,9 +51,51 @@ const foodImages = [
   grilledChicken, dessertChocolate, saladBowl, heroPasta,
 ];
 
+// Specific Indian dish name-to-image mapping
+const indianDishImages: Record<string, string> = {
+  'butter chicken': butterChicken,
+  'murgh makhani': butterChicken,
+  'biryani': biryani,
+  'dum biryani': biryani,
+  'hyderabadi': biryani,
+  'masala dosa': masalaDosa,
+  'dosa': masalaDosa,
+  'palak paneer': palakPaneer,
+  'saag paneer': palakPaneer,
+  'chole bhature': choleBhature,
+  'chhole bhature': choleBhature,
+  'samosa': samosa,
+  'dal makhani': dalMakhani,
+  'daal makhani': dalMakhani,
+  'tandoori chicken': tandooriChicken,
+  'tandoori': tandooriChicken,
+  'gulab jamun': gulabJamun,
+  'jalebi': jalebi,
+  'aloo gobi': alooGobi,
+  'gobi aloo': alooGobi,
+  'pani puri': paniPuri,
+  'golgappa': paniPuri,
+  'malai kofta': malaiKofta,
+  'kofta': malaiKofta,
+  'paneer tikka': paneerTikka,
+  'chicken tikka masala': chickenTikkaMasala,
+  'tikka masala': chickenTikkaMasala,
+  'vada pav': vadaPav,
+  'vada pao': vadaPav,
+  'rajma chawal': rajmaChawal,
+  'rajma': rajmaChawal,
+  'pav bhaji': pavBhaji,
+  'rogan josh': roganJosh,
+};
+
 function getRecipeImage(name: string, cuisine?: string): string {
   const text = (name + ' ' + (cuisine || '')).toLowerCase();
-  if (text.includes('indian') || text.includes('curry') || text.includes('korma') || text.includes('masala')) return indianCurry;
+  
+  // Check specific Indian dish matches first
+  for (const [key, img] of Object.entries(indianDishImages)) {
+    if (text.includes(key)) return img;
+  }
+  
   if (text.includes('italian') || text.includes('pasta') || text.includes('spaghetti')) return italianPasta;
   if (text.includes('mexican') || text.includes('taco') || text.includes('burrito')) return mexicanTacos;
   if (text.includes('mediterranean') || text.includes('greek')) return mediterraneanSalad;
@@ -44,6 +106,7 @@ function getRecipeImage(name: string, cuisine?: string): string {
   if (text.includes('chicken') || text.includes('turkey')) return grilledChicken;
   if (text.includes('dessert') || text.includes('cake') || text.includes('chocolate')) return dessertChocolate;
   if (text.includes('salad') || text.includes('vegan')) return saladBowl;
+  if (text.includes('indian') || text.includes('curry') || text.includes('korma') || text.includes('masala')) return indianCurry;
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash) + name.charCodeAt(i);
   return foodImages[Math.abs(hash) % foodImages.length];
