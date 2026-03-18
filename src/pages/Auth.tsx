@@ -56,7 +56,7 @@ const Auth = () => {
         title: "Success!",
         description: "Account created successfully",
       });
-      navigate("/");
+      navigate("/onboarding");
     }
   };
 
