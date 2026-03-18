@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import MealPlanner from "./pages/MealPlanner";
 import DatasetManagement from "./pages/DatasetManagement";
 import AdminDashboard from "./pages/AdminDashboard";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/my-recipes" element={<MyRecipes />} />
           <Route path="/community" element={<Community />} />
           <Route path="/dashboard" element={<Dashboard />} />
