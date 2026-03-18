@@ -82,6 +82,19 @@ const Auth = () => {
         variant: "destructive",
       });
     } else {
+      // Check if user has completed onboarding
+      const { data: { user: signedInUser } } = await supabase.auth.getUser();
+      if (signedInUser) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("dietary_preferences")
+          .eq("id", signedInUser.id)
+          .single();
+        if (!profile?.dietary_preferences || profile.dietary_preferences.length === 0) {
+          navigate("/onboarding");
+          return;
+        }
+      }
       toast({
         title: "Welcome back!",
         description: "Signed in successfully",
