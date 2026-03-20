@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { isAdminEmail } from "@/lib/adminEmails";
 import { Button } from "./ui/button";
-import { ChefHat, Menu, X, User, Calendar, LogOut, Database } from "lucide-react";
+import { ChefHat, Menu, X, User, Calendar, LogOut, Database, LayoutDashboard, Shield } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { NavLink } from "./NavLink";
 
