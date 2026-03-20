@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { isAdminEmail } from "@/lib/adminEmails";
 import { Button } from "./ui/button";
-import { ChefHat, Menu, X, User, Calendar, LogOut, Database } from "lucide-react";
+import { ChefHat, Menu, X, User, Calendar, LogOut, Database, LayoutDashboard, Shield } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { NavLink } from "./NavLink";
 
@@ -89,6 +90,10 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/profile")}>
                     <User className="h-4 w-4 mr-2" />
                     My Profile
@@ -101,10 +106,12 @@ const Navbar = () => {
                     <Database className="h-4 w-4 mr-2" />
                     Dataset Management
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    <Database className="h-4 w-4 mr-2" />
-                    Admin Dashboard
-                  </DropdownMenuItem>
+                  {isAdminEmail(user?.email) && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin Dashboard
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
