@@ -44,6 +44,16 @@ import vadaPav from "@/assets/vada-pav.jpg";
 import rajmaChawal from "@/assets/rajma-chawal.jpg";
 import pavBhaji from "@/assets/pav-bhaji.jpg";
 import roganJosh from "@/assets/rogan-josh.jpg";
+// New cuisine images
+import margheritaPizza from "@/assets/margherita-pizza.jpg";
+import carbonara from "@/assets/carbonara.jpg";
+import tiramisu from "@/assets/tiramisu.jpg";
+import kungPaoChicken from "@/assets/kung-pao-chicken.jpg";
+import dimSum from "@/assets/dim-sum.jpg";
+import friedRice from "@/assets/fried-rice.jpg";
+import tacosAlPastor from "@/assets/tacos-al-pastor.jpg";
+import enchiladas from "@/assets/enchiladas.jpg";
+import churros from "@/assets/churros.jpg";
 
 const foodImages = [
   indianCurry, italianPasta, mexicanTacos, mediterraneanSalad,
