@@ -88,6 +88,7 @@ const difficultyStyles: Record<string, string> = {
 
 const RecipeCard = ({ recipe, onDelete, onShare, onAddToMealPlan, showActions, compact }: RecipeCardProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(!compact);
 
   const handleCopy = () => {
