@@ -366,7 +366,7 @@ const Community = () => {
                   <Card
                     key={recipe.id}
                     className="group overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 border hover:border-primary/30"
-                    onClick={() => setSelectedRecipe(recipe)}
+                    onClick={() => navigate(`/recipe/${recipe.id}`, { state: { communityData: recipe } })}
                   >
                     {/* Image */}
                     <div className="relative h-44 overflow-hidden">
