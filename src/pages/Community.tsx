@@ -99,8 +99,8 @@ function getRecipeImage(name: string, cuisine?: string): string {
   const text = (name + ' ' + (cuisine || '')).toLowerCase();
   
   // Check specific Indian dish matches first
-  for (const [key, img] of Object.entries(indianDishImages)) {
-    if (text.includes(key)) return img;
+  for (const [key, img] of Object.entries(dishImageMap)) {
+    if (text.includes(key)) return img as string;
   }
   
   if (text.includes('italian') || text.includes('pasta') || text.includes('spaghetti')) return italianPasta;
