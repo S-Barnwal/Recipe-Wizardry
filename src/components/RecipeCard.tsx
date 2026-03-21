@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -87,6 +88,7 @@ const difficultyStyles: Record<string, string> = {
 
 const RecipeCard = ({ recipe, onDelete, onShare, onAddToMealPlan, showActions, compact }: RecipeCardProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(!compact);
 
   const handleCopy = () => {
@@ -103,7 +105,7 @@ const RecipeCard = ({ recipe, onDelete, onShare, onAddToMealPlan, showActions, c
     return (
       <Card
         className="group overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 border hover:border-primary/30"
-        onClick={() => setExpanded(true)}
+        onClick={() => navigate("/recipe/generated", { state: { recipe } })}
       >
         {/* Image */}
         <div className="relative h-40 overflow-hidden">

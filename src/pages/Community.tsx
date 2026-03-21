@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import indianCurry from "@/assets/indian-curry.jpg";
@@ -44,6 +44,16 @@ import vadaPav from "@/assets/vada-pav.jpg";
 import rajmaChawal from "@/assets/rajma-chawal.jpg";
 import pavBhaji from "@/assets/pav-bhaji.jpg";
 import roganJosh from "@/assets/rogan-josh.jpg";
+// New cuisine images
+import margheritaPizza from "@/assets/margherita-pizza.jpg";
+import carbonara from "@/assets/carbonara.jpg";
+import tiramisu from "@/assets/tiramisu.jpg";
+import kungPaoChicken from "@/assets/kung-pao-chicken.jpg";
+import dimSum from "@/assets/dim-sum.jpg";
+import friedRice from "@/assets/fried-rice.jpg";
+import tacosAlPastor from "@/assets/tacos-al-pastor.jpg";
+import enchiladas from "@/assets/enchiladas.jpg";
+import churros from "@/assets/churros.jpg";
 
 const foodImages = [
   indianCurry, italianPasta, mexicanTacos, mediterraneanSalad,
@@ -51,49 +61,46 @@ const foodImages = [
   grilledChicken, dessertChocolate, saladBowl, heroPasta,
 ];
 
-// Specific Indian dish name-to-image mapping
-const indianDishImages: Record<string, string> = {
-  'butter chicken': butterChicken,
-  'murgh makhani': butterChicken,
-  'biryani': biryani,
-  'dum biryani': biryani,
-  'hyderabadi': biryani,
-  'masala dosa': masalaDosa,
-  'dosa': masalaDosa,
-  'palak paneer': palakPaneer,
-  'saag paneer': palakPaneer,
-  'chole bhature': choleBhature,
-  'chhole bhature': choleBhature,
-  'samosa': samosa,
-  'dal makhani': dalMakhani,
-  'daal makhani': dalMakhani,
-  'tandoori chicken': tandooriChicken,
-  'tandoori': tandooriChicken,
-  'gulab jamun': gulabJamun,
-  'jalebi': jalebi,
-  'aloo gobi': alooGobi,
-  'gobi aloo': alooGobi,
-  'pani puri': paniPuri,
-  'golgappa': paniPuri,
-  'malai kofta': malaiKofta,
-  'kofta': malaiKofta,
+// Specific dish name-to-image mapping
+const dishImageMap: Record<string, string> = {
+  'butter chicken': butterChicken, 'murgh makhani': butterChicken,
+  'biryani': biryani, 'dum biryani': biryani, 'hyderabadi': biryani,
+  'masala dosa': masalaDosa, 'dosa': masalaDosa,
+  'palak paneer': palakPaneer, 'saag paneer': palakPaneer,
+  'chole bhature': choleBhature, 'chhole bhature': choleBhature,
+  'samosa': samosa, 'dal makhani': dalMakhani, 'daal makhani': dalMakhani,
+  'tandoori chicken': tandooriChicken, 'tandoori': tandooriChicken,
+  'gulab jamun': gulabJamun, 'jalebi': jalebi,
+  'aloo gobi': alooGobi, 'gobi aloo': alooGobi,
+  'pani puri': paniPuri, 'golgappa': paniPuri,
+  'malai kofta': malaiKofta, 'kofta': malaiKofta,
   'paneer tikka': paneerTikka,
-  'chicken tikka masala': chickenTikkaMasala,
-  'tikka masala': chickenTikkaMasala,
-  'vada pav': vadaPav,
-  'vada pao': vadaPav,
-  'rajma chawal': rajmaChawal,
-  'rajma': rajmaChawal,
-  'pav bhaji': pavBhaji,
-  'rogan josh': roganJosh,
+  'chicken tikka masala': chickenTikkaMasala, 'tikka masala': chickenTikkaMasala,
+  'vada pav': vadaPav, 'vada pao': vadaPav,
+  'rajma chawal': rajmaChawal, 'rajma': rajmaChawal,
+  'pav bhaji': pavBhaji, 'rogan josh': roganJosh,
+  // Italian
+  'margherita pizza': margheritaPizza, 'pizza': margheritaPizza,
+  'carbonara': carbonara, 'tiramisu': tiramisu,
+  'risotto': italianPasta, 'lasagna': italianPasta,
+  // Chinese
+  'kung pao': kungPaoChicken, 'kung pao chicken': kungPaoChicken,
+  'dim sum': dimSum, 'dumpling': dimSum, 'dumplings': dimSum,
+  'fried rice': friedRice, 'yangzhou': friedRice,
+  'mapo tofu': asianBowl, 'sweet and sour': asianBowl,
+  // Mexican
+  'tacos al pastor': tacosAlPastor, 'al pastor': tacosAlPastor,
+  'enchilada': enchiladas, 'enchiladas': enchiladas,
+  'churro': churros, 'churros': churros,
+  'guacamole': mexicanTacos, 'pozole': mexicanTacos,
 };
 
 function getRecipeImage(name: string, cuisine?: string): string {
   const text = (name + ' ' + (cuisine || '')).toLowerCase();
   
   // Check specific Indian dish matches first
-  for (const [key, img] of Object.entries(indianDishImages)) {
-    if (text.includes(key)) return img;
+  for (const [key, img] of Object.entries(dishImageMap)) {
+    if (text.includes(key)) return img as string;
   }
   
   if (text.includes('italian') || text.includes('pasta') || text.includes('spaghetti')) return italianPasta;
@@ -151,9 +158,8 @@ const Community = () => {
   const [cuisineType, setCuisineType] = useState("All");
   const [dietaryFilters, setDietaryFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
-  const [selectedRecipe, setSelectedRecipe] = useState<CommunityRecipe | null>(null);
-  const [showReviews, setShowReviews] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkUser();
@@ -367,7 +373,7 @@ const Community = () => {
                   <Card
                     key={recipe.id}
                     className="group overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 border hover:border-primary/30"
-                    onClick={() => setSelectedRecipe(recipe)}
+                    onClick={() => navigate(`/recipe/${recipe.id}`, { state: { communityData: recipe } })}
                   >
                     {/* Image */}
                     <div className="relative h-44 overflow-hidden">
@@ -447,138 +453,6 @@ const Community = () => {
         </div>
       </main>
       <Footer />
-
-      {/* Recipe Detail Dialog */}
-      <Dialog open={!!selectedRecipe} onOpenChange={() => { setSelectedRecipe(null); setShowReviews(null); }}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto p-0">
-          {selectedRecipe && (
-            <>
-              {/* Hero image */}
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={getRecipeImage(selectedRecipe.dish_name, selectedRecipe.cuisine_type || undefined)}
-                  alt={selectedRecipe.dish_name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <div className="absolute bottom-4 left-5 right-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    {selectedRecipe.cuisine_type && (
-                      <Badge variant="outline" className="text-xs bg-background/60 backdrop-blur-sm border-white/30 text-white">
-                        <Globe className="h-3 w-3 mr-1" />{selectedRecipe.cuisine_type}
-                      </Badge>
-                    )}
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white">{selectedRecipe.dish_name}</h2>
-                  <p className="text-white/70 text-sm mt-1">
-                    By {usernames[selectedRecipe.user_id] || "Anonymous"} · {timeAgo(selectedRecipe.created_at)}
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 md:p-8 space-y-6">
-                {/* Stats */}
-                <div className="flex flex-wrap gap-4 p-3 rounded-xl bg-muted/50">
-                  {selectedRecipe.prep_time && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="h-4 w-4 text-primary" />
-                      <div><span className="text-muted-foreground text-xs">Prep</span><p className="font-semibold text-xs">{selectedRecipe.prep_time} min</p></div>
-                    </div>
-                  )}
-                  {selectedRecipe.cook_time && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="h-4 w-4 text-primary" />
-                      <div><span className="text-muted-foreground text-xs">Cook</span><p className="font-semibold text-xs">{selectedRecipe.cook_time} min</p></div>
-                    </div>
-                  )}
-                  {selectedRecipe.servings && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Users className="h-4 w-4 text-primary" />
-                      <div><span className="text-muted-foreground text-xs">Serves</span><p className="font-semibold text-xs">{selectedRecipe.servings}</p></div>
-                    </div>
-                  )}
-                  {selectedRecipe.calories && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Flame className="h-4 w-4 text-primary" />
-                      <div><span className="text-muted-foreground text-xs">Calories</span><p className="font-semibold text-xs">{selectedRecipe.calories} cal</p></div>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-sm ml-auto">
-                    <Heart className={`h-4 w-4 ${likedRecipes.has(selectedRecipe.id) ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
-                    <span className="font-semibold text-xs">{selectedRecipe.likes_count} likes</span>
-                  </div>
-                </div>
-
-                {/* Like & Review actions */}
-                <div className="flex gap-2">
-                  <Button
-                    variant={likedRecipes.has(selectedRecipe.id) ? "default" : "outline"}
-                    size="sm"
-                    onClick={(e) => handleLike(e, selectedRecipe.id)}
-                  >
-                    <Heart className={`h-4 w-4 mr-1.5 ${likedRecipes.has(selectedRecipe.id) ? "fill-current" : ""}`} />
-                    {likedRecipes.has(selectedRecipe.id) ? "Liked" : "Like"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowReviews(showReviews ? null : selectedRecipe.id)}
-                  >
-                    <Star className="h-4 w-4 mr-1.5" />
-                    Reviews ({selectedRecipe.review_count || 0})
-                  </Button>
-                </div>
-
-                {/* Ingredients + Instructions */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-bold flex items-center gap-2">
-                      🥘 Ingredients
-                      <span className="text-xs font-normal text-muted-foreground">
-                        ({Array.isArray(selectedRecipe.ingredients) ? selectedRecipe.ingredients.length : 0} items)
-                      </span>
-                    </h3>
-                    <ul className="space-y-1.5">
-                      {Array.isArray(selectedRecipe.ingredients) && selectedRecipe.ingredients.map((ing: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
-                          <span className="text-primary mt-0.5 font-bold">•</span>
-                          <span>{ing}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-bold flex items-center gap-2">
-                      👨‍🍳 Cooking Method
-                      <span className="text-xs font-normal text-muted-foreground">
-                        ({Array.isArray(selectedRecipe.instructions) ? selectedRecipe.instructions.length : 0} steps)
-                      </span>
-                    </h3>
-                    <ol className="space-y-3">
-                      {Array.isArray(selectedRecipe.instructions) && selectedRecipe.instructions.map((step: string, i: number) => (
-                        <li key={i} className="flex gap-3 text-sm">
-                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-                            {i + 1}
-                          </span>
-                          <span className="leading-relaxed">{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
-
-                {/* Reviews section */}
-                {showReviews && (
-                  <div className="border-t pt-6">
-                    <RecipeReviews recipeId={showReviews} />
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
