@@ -151,9 +151,8 @@ const Community = () => {
   const [cuisineType, setCuisineType] = useState("All");
   const [dietaryFilters, setDietaryFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
-  const [selectedRecipe, setSelectedRecipe] = useState<CommunityRecipe | null>(null);
-  const [showReviews, setShowReviews] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkUser();
