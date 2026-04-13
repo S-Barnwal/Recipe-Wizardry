@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDishImage } from "@/hooks/useDishImage";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -97,7 +98,8 @@ const RecipeCard = ({ recipe, onDelete, onShare, onAddToMealPlan, showActions, c
     toast({ title: "Copied!", description: "Recipe copied to clipboard." });
   };
 
-  const image = getRecipeImage(recipe);
+  const fallbackImage = getRecipeImage(recipe);
+  const { image } = useDishImage(recipe.name, fallbackImage);
   const diffColor = difficultyStyles[recipe.difficulty || ""] || difficultyStyles.Easy;
 
   // ── Compact Card ──
