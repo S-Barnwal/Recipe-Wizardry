@@ -94,16 +94,17 @@ serve(async (req) => {
 
     console.log('Generating recipe for ingredients:', ingredients);
 
-    const systemPrompt = `You are an expert chef. Generate EXACTLY 20 diverse recipes based on the provided ingredients. Keep each recipe concise but complete.
+    const systemPrompt = `You are an expert chef. Generate EXACTLY 20 diverse recipes using ONLY the provided ingredients. Do NOT add any extra ingredients that the user has not listed. You may use common pantry staples (salt, pepper, oil, water) but nothing else beyond what is given.
 
 Return ONLY valid JSON, no markdown:
 {"recipes":[{"name":"Recipe name","confidence":90,"cuisine":"Italian","difficulty":"Easy","ingredients":["ingredient with qty"],"instructions":["Step 1","Step 2"],"cookTime":"25 min","prepTime":"10 min","servings":4,"calories":380,"tips":"Chef tip","substitutions":{"item":"alt"}}]}
 
 Rules:
+- STRICTLY use ONLY the ingredients provided by the user (plus basic salt/pepper/oil/water)
+- Do NOT invent or add ingredients the user did not provide
 - 20 unique recipes, varied cuisines and difficulty
 - 5-6 instruction steps per recipe (concise but clear)
 - Include prep/cook time, servings, calories
-- Keep ingredient lists to 6-8 items max
 - Be concise to avoid truncation${substitutionText}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -116,7 +117,7 @@ Rules:
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Generate 20 concise recipes using: ${ingredients.join(', ')}. Diverse cuisines and difficulty. Return valid JSON only.` }
+          { role: 'user', content: `Generate 20 concise recipes using ONLY these ingredients: ${ingredients.join(', ')}. Do NOT add any other ingredients besides basic salt/pepper/oil/water. Diverse cuisines and difficulty. Return valid JSON only.` }
         ],
         temperature: 0.8,
         max_tokens: 16000,
