@@ -31,7 +31,7 @@ const About = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1 pt-24 pb-12">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -79,6 +79,160 @@ const About = () => {
                 </Card>
               ))}
             </div>
+
+            <Card className="glass-card p-8 md:p-12 mb-12 animate-fade-in">
+              <h2 className="text-3xl font-bold mb-6">
+                Our Story
+              </h2>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                Smart Recipe Generator was created with a simple goal: to make cooking
+                easier, smarter, and more sustainable. Every day, millions of people
+                struggle to decide what to cook using the ingredients already available
+                in their kitchens. As a result, large amounts of food are wasted while
+                users spend valuable time searching for recipes online.
+              </p>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                Our platform uses Artificial Intelligence to analyze ingredients,
+                understand food combinations, and generate personalized recipes within
+                seconds. Whether you have vegetables, spices, leftovers, or a random
+                combination of ingredients, Smart Recipe Generator helps transform them
+                into delicious meals.
+              </p>
+
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                We believe technology should simplify everyday life. By combining
+                machine learning with culinary creativity, we aim to help people cook
+                confidently while reducing unnecessary food waste.
+              </p>
+            </Card>
+
+            <Card className="glass-card p-8 md:p-12 mb-12 animate-fade-in">
+              <h2 className="text-3xl font-bold mb-6">
+                Why Choose Smart Recipe Generator?
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Intelligent Recommendations
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Our AI understands ingredient combinations and suggests recipes
+                    tailored to your available ingredients and preferences.
+                  </p>
+                </div>
+
+                ```
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Ingredient-Based Search
+                  </h3>
+                  <p className="text-muted-foreground">
+                    No need to search endlessly through recipe websites. Simply enter
+                    what you have, and our system generates suitable meal ideas
+                    instantly.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Sustainability First
+                  </h3>
+                  <p className="text-muted-foreground">
+                    We encourage smarter cooking habits by helping users utilize
+                    leftovers and reduce food waste.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    User-Friendly Experience
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Our intuitive interface ensures a smooth experience for beginners,
+                    home cooks, and culinary enthusiasts alike.
+                  </p>
+                </div>
+                ```
+
+              </div>
+            </Card>
+
+            <Card className="glass-card p-8 md:p-12 mb-12 animate-fade-in">
+              <h2 className="text-3xl font-bold mb-6">
+                Technology Behind the Platform
+              </h2>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                Smart Recipe Generator leverages modern Artificial Intelligence,
+                ingredient recognition systems, machine learning models, and advanced
+                recommendation algorithms to deliver accurate recipe suggestions.
+              </p>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                The platform analyzes ingredient relationships, cooking methods,
+                nutritional information, and flavor pairings to create meaningful and
+                practical meal recommendations.
+              </p>
+
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                As our technology continues to evolve, we aim to provide even more
+                personalized meal planning, dietary recommendations, nutritional
+                insights, and smart cooking assistance.
+              </p>
+            </Card>
+
+            <Card className="glass-card p-8 md:p-12 mb-12 animate-fade-in">
+              <h2 className="text-3xl font-bold mb-8 text-center">
+                Platform Impact
+              </h2>
+
+              <div className="grid md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold text-primary mb-2">10K+</h3>
+                  <p className="text-muted-foreground">Recipes Generated</p>
+                </div>
+
+                ```
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold text-primary mb-2">5K+</h3>
+                  <p className="text-muted-foreground">Active Users</p>
+                </div>
+
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold text-primary mb-2">100+</h3>
+                  <p className="text-muted-foreground">Cuisine Types</p>
+                </div>
+
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold text-primary mb-2">95%</h3>
+                  <p className="text-muted-foreground">User Satisfaction</p>
+                </div>
+                ```
+
+              </div>
+            </Card>
+
+            <Card className="glass-card p-8 md:p-12 mb-12 animate-fade-in">
+              <h2 className="text-3xl font-bold mb-6">
+                Our Vision
+              </h2>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                Our vision is to become the world's most trusted AI-powered cooking
+                assistant. We want to empower every household with smart meal planning,
+                personalized nutrition guidance, and sustainable cooking solutions.
+              </p>
+
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                By combining innovation, technology, and creativity, Smart Recipe
+                Generator aims to transform kitchens worldwide into smarter, more
+                efficient, and environmentally conscious spaces.
+              </p>
+            </Card>
+
 
             <Card className="glass-card p-8 md:p-12 text-center animate-fade-in">
               <h2 className="text-3xl font-bold mb-4">
