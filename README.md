@@ -1,73 +1,128 @@
-# Welcome to your Lovable project
+# 🍳 Recipe Wizardry
 
-## Project info
+An AI-powered recipe generation platform that helps users discover delicious meals using available ingredients, food images, and smart recommendations. The platform is designed to make cooking easier, reduce food waste, and provide personalized recipe suggestions.
 
-**URL**: https://lovable.dev/projects/44c37641-9b42-4fa4-8f7d-22d9f2b72d79
+---
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+### 🤖 AI Recipe Generation
 
-**Use Lovable**
+Generate complete recipes instantly using available ingredients.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/44c37641-9b42-4fa4-8f7d-22d9f2b72d79) and start prompting.
+### 📸 Image-Based Recipe Suggestions
 
-Changes made via Lovable will be committed automatically to this repo.
+Upload food images and get relevant recipe recommendations.
 
-**Use your preferred IDE**
+### 🎤 Voice Ingredient Input
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Add ingredients using voice commands for a seamless experience.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🥗 Personalized Recommendations
 
-Follow these steps:
+Receive tailored recipe suggestions based on your preferences.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 📅 Smart Meal Planning
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Plan meals efficiently and organize your weekly cooking schedule.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 📦 Pantry Management
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Track available ingredients and make the most of what you already have.
+
+### ⭐ Community Reviews & Ratings
+
+Explore recipes shared by the community and discover highly rated dishes.
+
+### 🔍 Advanced Search & Filters
+
+Find recipes by cuisine, ingredients, cooking time, and dietary preferences.
+
+### 🌱 Reduce Food Waste
+
+Turn leftover ingredients into delicious meals with AI-powered suggestions.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* React.js
+* TypeScript
+* Vite
+* Tailwind CSS
+* Shadcn UI
+* Lucide React
+
+### State Management & Data
+
+* TanStack React Query
+
+### Backend & Database
+
+* Supabase
+
+### UI Components
+
+* Radix UI
+* Recharts
+* Sonner
+
+---
+
+## 📂 Project Structure
+
+```bash
+src/
+├── assets/
+├── components/
+├── hooks/
+├── integrations/
+├── lib/
+├── pages/
+├── App.tsx
+├── main.tsx
+└── index.css
+```
+
+## ⚙️ Installation
+
+```bash
+git clone https://github.com/S-Barnwal/Recipe-Wizardry.git
+
+cd Recipe-Wizardry
+
+npm install
+
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🎯 Project Goal
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Recipe Wizardry aims to simplify the cooking experience by leveraging Artificial Intelligence to generate recipes, suggest meal ideas, and help users utilize ingredients efficiently. The platform promotes sustainable cooking habits while making recipe discovery faster and more enjoyable.
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🌟 Future Enhancements
 
-## What technologies are used for this project?
+* Nutrition Analysis
+* Calorie Tracking
+* AI Meal Planner
+* Shopping List Generation
+* Multi-Language Support
+* Personalized Dietary Plans
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 👩‍💻 Developer
 
-## How can I deploy this project?
+**Sneha Barnwal**
 
-Simply open [Lovable](https://lovable.dev/projects/44c37641-9b42-4fa4-8f7d-22d9f2b72d79) and click on Share -> Publish.
+Full Stack Developer | MERN Stack Enthusiast | React Developer
 
-## Can I connect a custom domain to my Lovable project?
+Passionate about building modern web applications, creating intuitive user experiences, and leveraging technology to solve real-world problems.
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### ⭐ If you like this project, don't forget to star the repository!
