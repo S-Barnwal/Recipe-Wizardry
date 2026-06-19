@@ -3,7 +3,7 @@
 An AI-powered recipe generation platform that helps users discover delicious meals using available ingredients, food images, and smart recommendations. The platform is designed to make cooking easier, reduce food waste, and provide personalized recipe suggestions.
 
 ---
-
+Project Link- recipe-wizardry.netlify.app
 ## 🚀 Features
 
 ### 🤖 AI Recipe Generation
