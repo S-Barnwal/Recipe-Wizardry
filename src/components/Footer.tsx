@@ -14,7 +14,7 @@ const Footer = () => {
     <footer className="mt-20 border-t bg-slate-950 text-white">
       <div className="container mx-auto px-6 py-14">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
-          
+
           {/* Brand */}
           <div>
             <div className="mb-5 flex items-center gap-3">
@@ -23,8 +23,8 @@ const Footer = () => {
               </div>
 
               <h2 className="text-2xl font-bold">
-                Smart
-                <span className="text-orange-500"> Recipe</span>
+                Recipe
+                <span className="text-orange-500"> Wizardry</span>
               </h2>
             </div>
 
@@ -36,21 +36,25 @@ const Footer = () => {
 
             <div className="mt-6 flex gap-3">
               <a
-                href="#"
+                href="https://github.com/S-Barnwal"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-xl border border-slate-800 bg-slate-900 p-3 transition-all duration-300 hover:border-orange-500 hover:text-orange-500"
               >
                 <Github size={18} />
               </a>
 
               <a
-                href="#"
+                href="https://www.linkedin.com/in/sneha-barnwal-90b800262/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-xl border border-slate-800 bg-slate-900 p-3 transition-all duration-300 hover:border-orange-500 hover:text-orange-500"
               >
                 <Linkedin size={18} />
               </a>
 
               <a
-                href="mailto:support@smartrecipe.ai"
+                href="mailto:contact.snehabarnwal@gmail.com"
                 className="rounded-xl border border-slate-800 bg-slate-900 p-3 transition-all duration-300 hover:border-orange-500 hover:text-orange-500"
               >
                 <Mail size={18} />
@@ -126,26 +130,44 @@ const Footer = () => {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="mb-5 text-lg font-semibold text-orange-500">
-              Contact
-            </h3>
+          <div className="space-y-4 text-slate-400">
+            <div className="flex items-center gap-3">
+              <Mail size={18} className="text-orange-500" />
+              <a
+                href="mailto:contact.snehabarnwal@gmail.com"
+                className="hover:text-orange-500"
+              >
+                contact.snehabarnwal@gmail.com
+              </a>
+            </div>
 
-            <div className="space-y-4 text-slate-400">
-              <div className="flex items-center gap-3">
-                <Mail size={18} className="text-orange-500" />
-                <span>support@smartrecipe.ai</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <Github size={18} className="text-orange-500" />
+              <a
+                href="https://github.com/S-Barnwal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-500"
+              >
+                github.com/S-Barnwal
+              </a>
+            </div>
 
-              <div className="flex items-center gap-3">
-                <Phone size={18} className="text-orange-500" />
-                <span>+91 XXXXX XXXXX</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <Linkedin size={18} className="text-orange-500" />
+              <a
+                href="https://www.linkedin.com/in/sneha-barnwal-90b800262/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-500"
+              >
+                LinkedIn Profile
+              </a>
+            </div>
 
-              <div className="flex items-center gap-3">
-                <MapPin size={18} className="text-orange-500" />
-                <span>Lucknow, Uttar Pradesh</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <MapPin size={18} className="text-orange-500" />
+              <span>Lucknow, Uttar Pradesh, India</span>
             </div>
           </div>
         </div>
@@ -154,7 +176,7 @@ const Footer = () => {
         <div className="mt-12 border-t border-slate-800 pt-6">
           <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
             <p className="text-sm text-slate-500">
-              © {new Date().getFullYear()} Smart Recipe AI.
+              © {new Date().getFullYear()} Recipe Wizardry.
               All rights reserved.
             </p>
 
@@ -182,7 +204,7 @@ const Footer = () => {
             </div>
 
             <p className="flex items-center gap-1 text-sm text-slate-500">
-              Made with
+              Built & Designed by Sneha Barnwal
               <Heart
                 size={14}
                 className="fill-orange-500 text-orange-500"

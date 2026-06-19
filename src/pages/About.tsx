@@ -124,7 +124,7 @@ const About = () => {
                   </p>
                 </div>
 
-                ```
+               
                 <div>
                   <h3 className="text-xl font-semibold mb-2">
                     Ingredient-Based Search
@@ -155,7 +155,7 @@ const About = () => {
                     home cooks, and culinary enthusiasts alike.
                   </p>
                 </div>
-                ```
+               
 
               </div>
             </Card>
@@ -195,7 +195,7 @@ const About = () => {
                   <p className="text-muted-foreground">Recipes Generated</p>
                 </div>
 
-                ```
+               
                 <div className="text-center">
                   <h3 className="text-4xl font-bold text-primary mb-2">5K+</h3>
                   <p className="text-muted-foreground">Active Users</p>
@@ -210,7 +210,7 @@ const About = () => {
                   <h3 className="text-4xl font-bold text-primary mb-2">95%</h3>
                   <p className="text-muted-foreground">User Satisfaction</p>
                 </div>
-                ```
+               
 
               </div>
             </Card>

@@ -67,7 +67,7 @@ const PrivacyPolicy = () => {
             </h2>
 
             <p className="text-muted-foreground">
-              Email: support@smartrecipe.ai
+              Email: contact.snehabarnwal@gmail.com
             </p>
           </div>
         </div>
